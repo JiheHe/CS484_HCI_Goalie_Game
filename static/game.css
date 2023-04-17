@@ -1,0 +1,20 @@
+h1 {
+  text-align: center;
+}
+
+.football {
+   width: 15%;
+   position: absolute;
+   transform: scale(0.3, 0.3);
+   MozTransform: scale(0.3, 0.3);
+   WebkitTransform: scale(0.3, 0.3);
+   msTransform: scale(0.3, 0.3);
+   bottom: 20%;
+   left: 80%;
+   transition: 0.7s linear;
+ }
+ 
+.goalkeeper {
+  position: absolute;
+  width: 16%;
+}
