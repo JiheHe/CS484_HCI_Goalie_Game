@@ -13,8 +13,6 @@
       <input id="mockdata" type="submit" name="mock_jump_button" value="Clear here to mock user JUMP!"/>
    </div>
 
-   <button id="popup-btn">Open Popup</button>
-
 	<div class="popup">
 		<div class="popup-content">
       <div class="timer-instruction"></div>
@@ -28,20 +26,20 @@
 
       popupBtn.onclick = function() {
          popup.style.display = "block";
+         const readytime = 5;
+         let count = readytime;
+         let curinterval = setInterval(function() {
+            count--;
+            document.querySelector('.timer-instruction').innerHTML = "Game starts in";
+            document.querySelector('.timer').innerHTML = count + " s";
+            if (count <= 0) {
+               clearInterval(curinterval);
+               popup.style.display = "none";
+               window.location.replace("./game");
+            }
+         }, 1000);
       }
-
-      const readytime = 4;
-      let count = readytime;
-      let curinterval = setInterval(function() {
-         count--;
-         document.querySelector('.timer-instruction').innerHTML = "Game starts in";
-         document.querySelector('.timer').innerHTML = count + " s";
-         if (count <= 0) {
-            clearInterval(curinterval);
-            popup.style.display = "none";
-            window.location.replace("./game");
-         }
-      }, 1000);
+      
 	</script>
 </body>
 </html>

@@ -1,109 +1,102 @@
 $(function(){
 
-  var shotComplete = false,
-      count = 0,
-      score = 0,
-      saved = false;
+  let count = 0, score = 0, timer = 60; // to-be changed to 60 or 40 or 30, or 5(for testing)
+  let isRunning = true;
+  let request = null;
 
   window.addEventListener("mousemove", (e) =>{
-
     gsap.to(".goalkeeper", {
         duration: 0.4,
-        x: e.pageX,
-        y: e.pageY,
+        x: e.pageX - 750,
+        y: e.pageY - 200,
     });
-
-    /* --- To be used for the 3D model of goalkeeper
-    var xPos = (e.clientX/window.outerWidth),
-    yPos = (e.clientY/window.outerHeight);
-    gsap.to(goalkeeper, {
-        duration: 0.3,
-        rotationX: xPos * 50,
-        rotationY: yPos * 150,
-    });
-    */
-
-    // var goalKeeperPosLeftRnd  = Math.ceil( Math.round(e.pageX)/100)*100,
-    //     ballPosLeftRnd =  Math.ceil( Math.round($('.football').offset().left)/100)*100,
-    //     goalKeeperPosTopRnd  =  Math.ceil(Math.round(e.pageY)/100)*100,
-    //     ballPosTopRnd =  Math.ceil(Math.round($('.football').offset().top)/100)*100;
-
-    //  if (goalKeeperPosLeftRnd == ballPosLeftRnd && goalKeeperPosTopRnd == ballPosTopRnd && shotComplete && !saved) {
-    //    score += 1;
-    //    saved = true;
-
-    //    editScoreText();
-
-    // } else if  ((goalKeeperPosLeftRnd + 100) == ballPosLeftRnd && goalKeeperPosTopRnd == ballPosTopRnd && shotComplete && !saved) {
-
-    //   score += 1;
-    //   saved = true;
-    //   editScoreText();
-
-    // } else if(shotComplete && !saved){
-    // //   smashScreen();
-    // }
-
-    let rect1 = document.querySelector(".football").getBoundingClientRect(),
-        rect2 = document.querySelector(".goalkeeper").getBoundingClientRect();
-    if (checkOverlap(rect1, rect2)){
-        score += 1;
-        saved = true;
-        console.log("saved!!");
-        editScoreText();
-    } else{
-        saved = false;
-    }
-    e.pageX = e.pageX - parseInt($('.container').css('marginLeft'));
-
-    if (e.pageX < 2000 && e.pageY < 900 && e.pageX > 0 && e.pageY > 0) {
-           $('.goalkeeper').css('left', (e.pageX - 100));
-           $('.goalkeeper').css('top', (e.pageY - 200));
-    };
-
-    if (e.pageX < 500) {
-
-        $('.goalkeeper').css({
-           transform: 'rotateZ(-50deg)',
-           MozTransform: ' rotateZ(-50deg)',
-           WebkitTransform: 'rotateZ(-50deg)',
-           msTransform: ' rotateZ(-50deg)'
-        });
-
-    } else if (e.pageX > 1400) {
-
-      $('.goalkeeper').css({
-           transform: 'rotateZ(50deg)',
-           MozTransform: ' rotateZ(50deg)',
-           WebkitTransform: 'rotateZ(50deg)',
-           msTransform: ' rotateZ(50;deg)'
-      });
-
-    } else {
-
-      $('.goalkeeper').css({
-           transform: 'rotateZ(0deg)',
-           MozTransform: ' rotateZ(0deg)',
-           WebkitTransform: 'rotateZ(0deg)',
-           msTransform: ' rotateZ(0deg)'
-        });
-
-    }
-
   });
 
-//  interval = setInterval(function(){
-//     footballShot()
+  interval1 = setInterval(function(){
+    $('.curtime').text(timer--);
+    if (timer == 0){
+        endGame();
+    }
+  }, 1000);
 
-//     setTimeout( function() {
+  interval2 = setInterval(function(){
+    if (isRunning){
+        footballShot(); 
 
-//       $('.football').css({
-//         transform: 'scale(0.2, 0.2)',
-//       })
-//       shotComplete = false;
-//     }, 1000);
+        setTimeout( function() {
+            $('.football').css({
+                transform: 'scale(0.2)',
+            })
+        }, 1000);
 
-//   }, 3000);
+        setTimeout( function() {
+            let rect1 = document.querySelector(".football").getBoundingClientRect(),
+            rect2 = document.querySelector(".goalkeeper").getBoundingClientRect();
+            if (checkOverlap(rect1, rect2)){
+                score += 1;
+                if (score == 5){
+                    reminderOfLevelUp();
+                }
+            } 
+            editScore();
+            $('.football').css("visibility", "hidden");
+
+        }, 1700);
+    } 
+
+  }, 3000);
+
+
+  function endGame(){
+     isRunning = false;
+     clearInterval(interval1);
+     clearInterval(interval2);
+
+     let reminder = document.querySelector('.timeup-reminder');
+     reminder.style.display = "block";
+
+     const readtime = 5;
+     let count = readtime;
+     let curinterval = setInterval(function() {
+        count--;
+        document.querySelector('.timeup-instruction').innerHTML = "Time's up! Let's go check your performance :D";
+        document.querySelector('.timeup-timer').innerHTML = count + " s";
+        if (count <= 0) {
+            clearInterval(curinterval);
+            reminder.style.display = "none";
+            let url = '/leaderboard?score=' + score;
+            if (request != null)
+                request.abort();
+            request = $.ajax({
+                type: 'GET',
+                url: url
+            });
+            window.location.replace(url);
+        }
+     }, 1000);
+  }
+
+
+
+  function reminderOfLevelUp(){
+     isRunning = false;
+     let reminder = document.querySelector('.levelup-reminder');
+     reminder.style.display = "block";
+
+     const readtime = 5;
+     let count = readtime;
+     let curinterval = setInterval(function() {
+        count--;
+        document.querySelector('.levelup-instruction').innerHTML = "You brilliantly saved 5 balls. <br/> Now let's try faster balls!";
+        document.querySelector('.levelup-timer').innerHTML = count + " s";
+        if (count <= 0) {
+            clearInterval(curinterval);
+            reminder.style.display = "none";
+            $('.football').css("transition", "0.5s");
+            isRunning = true;
+        }
+     }, 1000);
+  }
 
 
   function checkOverlap(rect1, rect2){
@@ -115,56 +108,27 @@ $(function(){
 
 
   function footballShot() {
-
-     $('.football').css({
-        left:  getRandomXandY(0, 1000),
-        transform: 'scale(1, 1)'
+    $('.football').css({
+        left:  getRandomXandY(100, 1000),
+        top: getRandomXandY(200, 400),
+        transform: 'scale(1)'
     })
 
-     setTimeout( function() {
-       shotComplete = true;
-     }, 600);
+    setTimeout( function() {
+        $('.football').css("visibility", "visible");
+    }, 700);
 
-    saved = false;
     count += 1;
-
-    // if (count == 10) {
-    //     endGame();
-    // };
-
-    editScoreText();
   }
 
-  function editScoreText(){
-
+  function editScore(){
     setTimeout( function() {
       $('.score').text( score + " - " + (count - score));
     }, 800);
   }
 
-
   function getRandomXandY(max, min) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
-
-  // function smashScreen() {
-  //   if (smashScreenCount == 0) {
-  //
-  //     smashScreenCount = smashScreenCount + 1;
-  //
-  //      var smashedScreenLeftPos =  parseInt($('.football').css('left')),
-  //         smashedScreenBottomPos = parseInt($('.football').css('bottom'));
-  //
-  //     smashedScreenLeftPos = smashedScreenLeftPos - 110;
-  //     smashedScreenBottomPos = smashedScreenBottomPos - 90;
-  //
-  //     $('.smashedScreen').css({
-  //       opacity: '1',
-  //       left: smashedScreenLeftPos,
-  //       bottom: smashedScreenBottomPos
-  //     });
-  //   }
-  // };
-
 
 });
