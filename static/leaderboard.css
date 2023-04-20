@@ -1,0 +1,19 @@
+h1, div {
+   text-align: center;
+}
+
+p{
+   margin: 100px;
+   font-size: 20px;
+   font-style: italic;
+}
+
+text{
+   background-color:paleturquoise;
+}
+
+#mockdata {
+   height: 80px;
+   width: 30%;
+   font-size: 14pt;
+}
