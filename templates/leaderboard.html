@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+   <link rel="stylesheet" href="static/leaderboard.css">
+</head>
+
+<body>
+
+   <h1>Leaderboard Page</h1>
+   <div>
+      <text>
+         Back to home page in <text class="curtime"></text> s
+      </text>
+
+      <p> Attractive Visuals</p>
+      <p> Comments on User's performance <br/> Ex: within 60 s, you successfully saved {{ score }} balls. Awesome job! </p>
+      
+      <a href="/intro">
+         <input id="mockdata" type="submit" name="mock_jump_button" value="Clear here to mock user JUMP!"/>
+      </a>
+   </div>
+
+   
+   <script src= "https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+   <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
+   <script>
+      $(function(){
+         let timer = 10;
+         interval = setInterval(function(){
+            $('.curtime').text(timer--);
+            if (timer == 0){
+               clearInterval(interval);
+               window.location.replace("./intro");
+            }
+         }, 1000);
+      });
+      
+	</script>
+</body>
+</html>
