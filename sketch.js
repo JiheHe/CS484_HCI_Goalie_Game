@@ -22,7 +22,9 @@ var frames = {
       }
       else if (goaliePositionData === null) { 
         // TODO: further classification with special codes. I.e. if user left (lack of data), id switch, or just nothing happens.
-        // data can be returned with special codes
+        // data can be returned with special codes. Also see game state
+        // If game state is running, then pause
+        // Else do nothing
       }
     }
   },
