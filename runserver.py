@@ -24,7 +24,7 @@ def main():
         exit(1)
 
     try:
-        app.run(host='0.0.0.0', port=port, debug=True)
+        app.run(host='0.0.0.0', port=port, debug=True) # was 0.0.0.0
     except Exception as ex:
         print(ex, file=stderr)
         exit(1)

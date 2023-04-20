@@ -1,10 +1,10 @@
 // Adapted from https://p5js.org/examples/interaction-snake-game.html
 //
-var host = "localhost:4444";
-// var host = "cpsc484-04.yale.internal:8888" // this is to connect to the real time display data at hillhouse
+// var host = "localhost:4444";
+var host = "cpsc484-04.yale.internal:8888"; // this is to connect to the real time display data at hillhouse
 $(document).ready(function() {
   frames.start();
-  // twod.start(); // TODO: not ready yet; idk if even need this tbh
+  twod.start(); // TODO: not ready yet; idk if even need this tbh
 });
 
 var frames = {

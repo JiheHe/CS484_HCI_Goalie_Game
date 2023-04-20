@@ -146,6 +146,7 @@ $(function(){
   var host = "cpsc484-04.yale.internal:8888" // this is to connect to the real time display data at hillhouse
   $(document).ready(function() {
     frames.start();
+    // twod.start();
   });
 
   var frames = {
@@ -161,6 +162,7 @@ $(function(){
           // feed these data into game.js by simply triggering position update function in game.js; no normalization atm
           // If game is running already
           goaliePosition = goaliePositionData;
+          console.log("Data receieved");
           // UpdateObjectPosition (to be implemented in game state)
         }
         else if (goaliePositionData === null) { 
@@ -168,15 +170,16 @@ $(function(){
           // data can be returned with special codes. Also see game state
           // If game state is running, then pause
           // Else do nothing
+          console.log("No data yet");
         }
       }
     },
 
     // Takes in a frame, and returns the xyz position of the desired joint
-    RetreiveJointPosition: function (playerId, jointId) { // this refers to the calling frame obj
-      return {x: this.people[playerId].joints[jointId].position.x,
-              y: this.people[playerId].joints[jointId].position.y,
-              z: this.people[playerId].joints[jointId].position.z};
+    RetreiveJointPosition: function (frame, playerId, jointId) { // this refers to the calling frame obj
+      return {x: frame.people[playerId].joints[jointId].position.x,
+              y: frame.people[playerId].joints[jointId].position.y,
+              z: frame.people[playerId].joints[jointId].position.z};
     },
 
     ProcessUpperbodyData: function (frame) {
@@ -189,30 +192,30 @@ $(function(){
       }
 
       // Assume single player for now. This step just extracts all the user raw upperbody joint data. No normalization needed atm
-      var pelvisPosition = frame.RetreiveJointPosition(0, 0);
-      var spineNavalPosition = frame.RetreiveJointPosition(0, 1); // used for spawning body torso
-      var spineChestPosition = frame.RetreiveJointPosition(0, 2); // used for spawning body torso (a weighted avg between the two)
-      var neckPosition = frame.RetreiveJointPosition(0, 3);
-      var clavicleLeftPosition = frame.RetreiveJointPosition(0, 4);
-      var shoulderLeftPosition = frame.RetreiveJointPosition(0, 5);
-      var elbowLeftPosition = frame.RetreiveJointPosition(0, 6);
-      var wristLeftPosition = frame.RetreiveJointPosition(0, 7);
-      var handLeftPosition = frame.RetreiveJointPosition(0, 8); // used for spawning left hand (or goalie's right hand)
-      var handTipLeftPosition = frame.RetreiveJointPosition(0, 9);
-      var thumbLeftPosition = frame.RetreiveJointPosition(0, 10);
-      var clavicleRightPosition = frame.RetreiveJointPosition(0, 11);
-      var shoulderRightPosition = frame.RetreiveJointPosition(0, 12);
-      var elbowRightPosition = frame.RetreiveJointPosition(0, 13);
-      var wristRightPosition = frame.RetreiveJointPosition(0, 14);
-      var handRightPosition = frame.RetreiveJointPosition(0, 15); // used for spawning right hand (or goalie's left hand)
-      var handTipRightPosition = frame.RetreiveJointPosition(0, 16);
-      var thumbRightPosition = frame.RetreiveJointPosition(0, 17);
-      var headPosition = frame.RetreiveJointPosition(0, 26);
-      var nosePosition = frame.RetreiveJointPosition(0, 27); // used for spawning head
-      var eyeLeftPosition = frame.RetreiveJointPosition(0, 28);
-      var earLeftPosition = frame.RetreiveJointPosition(0, 29);
-      var eyeRightPosition = frame.RetreiveJointPosition(0, 30);
-      var earRightPosition = frame.RetreiveJointPosition(0, 31);
+      var pelvisPosition = frames.RetreiveJointPosition(frame, 0, 0);
+      var spineNavalPosition = frames.RetreiveJointPosition(frame, 0, 1); // used for spawning body torso
+      var spineChestPosition = frames.RetreiveJointPosition(frame, 0, 2); // used for spawning body torso (a weighted avg between the two)
+      var neckPosition = frames.RetreiveJointPosition(frame, 0, 3);
+      var clavicleLeftPosition = frames.RetreiveJointPosition(frame, 0, 4);
+      var shoulderLeftPosition = frames.RetreiveJointPosition(frame, 0, 5);
+      var elbowLeftPosition = frames.RetreiveJointPosition(frame, 0, 6);
+      var wristLeftPosition = frames.RetreiveJointPosition(frame, 0, 7);
+      var handLeftPosition = frames.RetreiveJointPosition(frame, 0, 8); // used for spawning left hand (or goalie's right hand)
+      var handTipLeftPosition = frames.RetreiveJointPosition(frame, 0, 9);
+      var thumbLeftPosition = frames.RetreiveJointPosition(frame, 0, 10);
+      var clavicleRightPosition = frames.RetreiveJointPosition(frame, 0, 11);
+      var shoulderRightPosition = frames.RetreiveJointPosition(frame, 0, 12);
+      var elbowRightPosition = frames.RetreiveJointPosition(frame, 0, 13);
+      var wristRightPosition = frames.RetreiveJointPosition(frame, 0, 14);
+      var handRightPosition = frames.RetreiveJointPosition(frame, 0, 15); // used for spawning right hand (or goalie's left hand)
+      var handTipRightPosition = frames.RetreiveJointPosition(frame, 0, 16);
+      var thumbRightPosition = frames.RetreiveJointPosition(frame, 0, 17);
+      var headPosition = frames.RetreiveJointPosition(frame, 0, 26);
+      var nosePosition = frames.RetreiveJointPosition(frame, 0, 27); // used for spawning head
+      var eyeLeftPosition = frames.RetreiveJointPosition(frame, 0, 28);
+      var earLeftPosition = frames.RetreiveJointPosition(frame, 0, 29);
+      var eyeRightPosition = frames.RetreiveJointPosition(frame, 0, 30);
+      var earRightPosition = frames.RetreiveJointPosition(frame, 0, 31);
 
       // post-process the data so it becomes viable in game. TODO: fine tune weights and certain ratios to transform from raw data to game space data
       // Could add in more positions for interpolation if needed
