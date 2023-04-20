@@ -1,0 +1,57 @@
+.center {
+    display: block;
+    margin-top: relative;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+  }
+
+
+#timer {
+    display: inline-block;
+    position: relative;
+    background-color: white;
+    width: 100px;
+    border: 15px solid #EDC94D;
+    padding: 10x;
+    left: 360px;
+    margin: 20px;
+    margin-top: 50px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+#level {
+    display: inline-block;
+    position: relative;
+    background-color: white;
+    width: 100px;
+    border: 15px solid #EDC94D;
+    padding: 10x;
+    left: 520px;
+    margin: 20px;
+    margin-top: 50px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+
+#score {
+    display: inline-block;
+    position: relative;
+    background-color: white;
+    width: 100px;
+    border: 15px solid #EDC94D;
+    padding: 10x;
+    left: 670px;
+    margin: 20px;
+    margin-top: 50px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+
+  
