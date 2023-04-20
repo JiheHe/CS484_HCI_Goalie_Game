@@ -66,8 +66,6 @@ var frames = {
     var earRightPosition = frame.RetreiveJointPosition(0, 31);
 
     // TODO: Implement some ways to utilize these data via helper functions and game structure coordinations
-    // Idea: for each segment (pair of joints) following the humanoid skeleton structure, draw a rectangle (or two circles connected by tangents) wrapping them up.
-    // then if certain % of the ball comes in contact with the shape, then output something to the gamestate, else other state.
 
     
     // Normalize by subtracting the root (pelvis) joint coordinates
