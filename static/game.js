@@ -4,6 +4,7 @@ $(function(){
   let isRunning = true;
   let request = null;
 
+  // instead of listening to mousemove, listen to change in player position
   window.addEventListener("mousemove", (e) =>{
     gsap.to(".goalkeeper", {
         duration: 0.4,

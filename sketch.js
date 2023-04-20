@@ -4,7 +4,7 @@ var host = "localhost:4444";
 // var host = "cpsc484-04.yale.internal:8888" // this is to connect to the real time display data at hillhouse
 $(document).ready(function() {
   frames.start();
-  twod.start();
+  // twod.start(); // TODO: not ready yet; idk if even need this tbh
 });
 
 var frames = {
@@ -14,12 +14,16 @@ var frames = {
     var url = "ws://" + host + "/frames";
     frames.socket = new WebSocket(url);
     frames.socket.onmessage = function (event) {
-      var command = frames.ProcessUpperbodyData(JSON.parse(event.data));
+      var goaliePositionData = frames.ProcessUpperbodyData(JSON.parse(event.data)); // separate function just in case for future pre processing
       // TODO: add a receiver function for the command; part of the game state implementation
-
-      //if (command !== null) {
-      //  sendWristCommand(command);
-      //}
+      if (goaliePositionData !== null) {
+        // feed these data into game.js by simply triggering position update function in game.js; no normalization atm
+        // UpdateObjectPosition (to be implemented in game state)
+      }
+      else if (goaliePositionData === null) { 
+        // TODO: further classification with special codes. I.e. if user left (lack of data), id switch, or just nothing happens.
+        // data can be returned with special codes
+      }
     }
   },
 
@@ -31,45 +35,57 @@ var frames = {
   },
 
   ProcessUpperbodyData: function (frame) {
-    var command = null;
+    var data = null;
     // TODO: finish the no-data processing. 
     // If there's a game session running, then Pause
     // Else do nothing (Return null)
     if (frame.people.length < 1) { // no one present, or player id changed/disappeared due to reassignment (TODO)
-      return command; 
+      return data; 
     }
 
-    // Assume single player for now. This step just extracts all the upperbody joint data. No normalization needed atm
+    // Assume single player for now. This step just extracts all the user raw upperbody joint data. No normalization needed atm
     var pelvisPosition = frame.RetreiveJointPosition(0, 0);
-    var spineNavalPosition = frame.RetreiveJointPosition(0, 1);
-    var spineChestPosition = frame.RetreiveJointPosition(0, 2);
+    var spineNavalPosition = frame.RetreiveJointPosition(0, 1); // used for spawning body torso
+    var spineChestPosition = frame.RetreiveJointPosition(0, 2); // used for spawning body torso (a weighted avg between the two)
     var neckPosition = frame.RetreiveJointPosition(0, 3);
     var clavicleLeftPosition = frame.RetreiveJointPosition(0, 4);
     var shoulderLeftPosition = frame.RetreiveJointPosition(0, 5);
     var elbowLeftPosition = frame.RetreiveJointPosition(0, 6);
     var wristLeftPosition = frame.RetreiveJointPosition(0, 7);
-    var handLeftPosition = frame.RetreiveJointPosition(0, 8);
+    var handLeftPosition = frame.RetreiveJointPosition(0, 8); // used for spawning left hand (or goalie's right hand)
     var handTipLeftPosition = frame.RetreiveJointPosition(0, 9);
     var thumbLeftPosition = frame.RetreiveJointPosition(0, 10);
     var clavicleRightPosition = frame.RetreiveJointPosition(0, 11);
     var shoulderRightPosition = frame.RetreiveJointPosition(0, 12);
     var elbowRightPosition = frame.RetreiveJointPosition(0, 13);
     var wristRightPosition = frame.RetreiveJointPosition(0, 14);
-    var handRightPosition = frame.RetreiveJointPosition(0, 15);
+    var handRightPosition = frame.RetreiveJointPosition(0, 15); // used for spawning right hand (or goalie's left hand)
     var handTipRightPosition = frame.RetreiveJointPosition(0, 16);
     var thumbRightPosition = frame.RetreiveJointPosition(0, 17);
     var headPosition = frame.RetreiveJointPosition(0, 26);
-    var nosePosition = frame.RetreiveJointPosition(0, 27);
+    var nosePosition = frame.RetreiveJointPosition(0, 27); // used for spawning head
     var eyeLeftPosition = frame.RetreiveJointPosition(0, 28);
     var earLeftPosition = frame.RetreiveJointPosition(0, 29);
     var eyeRightPosition = frame.RetreiveJointPosition(0, 30);
     var earRightPosition = frame.RetreiveJointPosition(0, 31);
 
-    // TODO: Implement some ways to utilize these data via helper functions and game structure coordinations
-
+    // post-process the data so it becomes viable in game. TODO: fine tune weights and certain ratios to transform from raw data to game space data
+    // Could add in more positions for interpolation if needed
+    // positions are relative to the goalie's view from the goal, inverse from user's
+    var alpha = 0.5; // weight parameter.
+    var goalieBodyCenterPosition = {x: alpha * spineNavalPosition.x + (1-alpha) * spineChestPosition.x,
+                                    y: alpha * spineNavalPosition.y + (1-alpha) * spineChestPosition.y,
+                                    z: alpha * spineNavalPosition.z + (1-alpha) * spineChestPosition.z};
+    var goalieLeftHandCenterPosition = handRightPosition;
+    var goalieRightHandCenterPosition = handLeftPosition;
+    var goalieHeadCenterPosition = nosePosition;
+    data = {goalieHeadCenterPosition, goalieLeftHandCenterPosition, goalieRightHandCenterPosition, goalieBodyCenterPosition};
     
-    // Normalize by subtracting the root (pelvis) joint coordinates
+    // return the post-processed data
+    return data;
+
     // This is from the example. Kept here as reference; not needed.
+    // Normalize by subtracting the root (pelvis) joint coordinates
     /*var pelvis_x = frame.people[0].joints[0].position.x;
     var pelvis_y = frame.people[0].joints[0].position.y;
     var pelvis_z = frame.people[0].joints[0].position.z;
@@ -94,11 +110,10 @@ var frames = {
         command = 74; // LEFT
       }
     }*/
-    return command;
   }
 };
 
-// this function draws the player Silhoutte. Comes in handy later.
+// this function draws the player Silhoutte. Comes in handy later. NOT IMPLEMENTED RN
 var twod = {
   socket: null,
 
@@ -116,6 +131,7 @@ var twod = {
 };
 
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // anything below this point is related to the example given. Kept as a reference for now, will delete later!
 // the snake is divided into small segments, which are drawn and edited on each 'draw' call
 let numSegments = 10;
