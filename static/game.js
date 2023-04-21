@@ -237,7 +237,7 @@ $(function(){
   let canvasWidth;
   let canvasHeight;
 
-  let inSessionPlayerID = 86; // the id of the player in session, our targetID of focus. Just a test value
+  let inSessionPlayerID = 502; // the id of the player in session, our targetID of focus. Just a test value. TODO.
 
   var frames = {
     socket: null,
@@ -336,17 +336,22 @@ $(function(){
       // TODO: finish the no-data processing. 
       // If there's a game session running, then Pause
       // Else do nothing (Return null)
-      if (frame.people.length < 1) { // no one present, or player id changed/disappeared due to reassignment (TODO)
+      if (frame.people.length < 1) { // no one present
+        if (gameState == GameState.RUNNING) { // if the game is alraedy running and no one is in scene, then we pause the game
+          gameState = GameState.PAUSED;
+        }
         return null; 
       }
 
       let bodyIDs = frames.RetrieveBodyIDs(frame);
+      console.log(bodyIDs);
 
       if (gameState == GameState.RUNNING) { // if game is already running, we only care about the data of our player of focus
         for (let bodyIndex = 0; bodyIndex < bodyIDs.length; bodyIndex++) {
           let bodyID = bodyIDs[bodyIndex];
-          console.log(bodyID);
-          if (bodyID == inSessionPlayerID) {
+          // console.log(bodyID);
+          if (bodyID === inSessionPlayerID) {
+            console.log("Target found. Updating data");
             // Player in session still exists! We want this one player's data ONLY.
             return frames.ProcessUpperbodyData(frame, bodyIndex);
           }
@@ -359,15 +364,13 @@ $(function(){
         return null;
       }
       else if (gameState == GameState.PAUSED) { // check for ANYONE that picks a choice; this is a per-user process
-        for (let bodyIndex = 0; bodyIndex < bodyIDs.length; bodyIndex++) {
-          let bodyData = frames.ProcessUpperbodyData(frame, bodyIndex);
-          // idea:
-          // extract this user's right hand data (coord position of goalie's left hand on screen)
-          // spawn a mini hand on screen showcasing where this user's right hand is at
-          // once hand enters option zone, start a timer...? 
-          // OR we do a pose detection. Which is easier... in a way? Need team to decide. TODO.
-        }
+        console.log("GAME IS PAUSED");
+        // idea:
+        // User hovers right hand over certain region, check for collision for certain number of seconds. First come first serve, ranked by Z depth.
         // update inSessionPlayerID to the choice selector if choose to continue
+        for (let bodyIndex = 0; bodyIndex < bodyIDs.length; bodyIndex++) {
+          // Find the user with the closest z axis. 
+        }
       }
       else if (gameState == GameState.INACTIVE) { // game not running yet, check all present body's data for potential game starter
 
@@ -400,6 +403,7 @@ $(function(){
       //var elbowRightPosition = frames.RetreiveJointPosition(frame, 0, 13);
       //var wristRightPosition = frames.RetreiveJointPosition(frame, 0, 14);
       var handRightPosition = frames.RetreiveJointPosition(frame, bodyIndex, 15); // used for spawning right hand (or goalie's left hand)
+      // console.log(handRightPosition);
       var handRightRotation = frames.RetrieveJointOrientation(frame, bodyIndex, 15);
       var handRightPosValidity = frames.RetrieveJointPosValidity(frame, bodyIndex, 15);
       //var handTipRightPosition = frames.RetreiveJointPosition(frame, 0, 16);
