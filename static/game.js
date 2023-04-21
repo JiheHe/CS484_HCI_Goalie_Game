@@ -1,7 +1,13 @@
 $(function(){
+  const GameState = {
+    RUNNING: 0, // a game session is ongoing
+    PAUSED: 1, // a game session is paused
+    ONMESSAGE: 2, // a game session is showing some message
+    INACTIVE: 3 // a game session hasn't started
+  };
 
   let count = 0, score = 0, timer = 60; // to-be changed to 60 or 40 or 30, or 5(for testing)
-  let isRunning = true; // TODO: isRunning should start false. And the intro scene logic should enable it to true if a session is confirmed
+  let gameState = GameState.RUNNING; // true; // TODO: isRunning should start false. And the intro scene logic should enable it to true if a session is confirmed
   let request = null;
   let goaliePosition = null;
 
@@ -22,7 +28,7 @@ $(function(){
   }, 1000);
 
   interval2 = setInterval(function(){
-    if (isRunning){
+    if (gameState == GameState.RUNNING){
         footballShot(); 
 
         setTimeout( function() {
@@ -53,7 +59,7 @@ $(function(){
 
 
   function endGame(){
-     isRunning = false;
+     gameState = GameState.INACTIVE;
      clearInterval(interval1);
      clearInterval(interval2);
 
@@ -84,7 +90,7 @@ $(function(){
 
 
   function reminderOfLevelUp(){
-     isRunning = false;
+     gameState = GameState.ONMESSAGE;
      let reminder = document.querySelector('.levelup-reminder');
      reminder.style.display = "block";
 
@@ -98,7 +104,7 @@ $(function(){
             clearInterval(curinterval);
             reminder.style.display = "none";
             $('.football').css("transition", "0.5s");
-            isRunning = true;
+            gameState = GameState.RUNNING;
         }
      }, 1000);
   }
@@ -229,7 +235,7 @@ $(function(){
   let canvasWidth;
   let canvasHeight;
 
-  let inSessionPlayerID = 43; // the id of the player in session, our targetID of focus. 43 is just a test value
+  let inSessionPlayerID = 49; // the id of the player in session, our targetID of focus. 43 is just a test value
 
   var frames = {
     socket: null,
@@ -247,7 +253,7 @@ $(function(){
         if (goaliePositionData !== null) {
           // feed these data into game.js by simply triggering position update function in game.js; no normalization atm
           // If a game session is running already
-          if (isRunning) {
+          if (gameState == GameState.RUNNING) {
             // goaliePosition = goaliePositionData;
             updateGoaliePosition(".goalkeeperBody", goaliePositionData.goalieBodyCenterPosition, {x:0, y:0});   // won't be affected by device scaling
             updateGoaliePosition(".goalkeeperHead", goaliePositionData.goalieHeadCenterPosition, {x:0, y:-5}); // can do this because will be relative to game space
@@ -263,7 +269,7 @@ $(function(){
           // TODO: further classification with special codes. I.e. if user left (lack of data), id switch, or just nothing happens.
           // data can be returned with special codes. Also see game state
           // If game state is running, then pause
-          if (isRunning) {
+          if (gameState == GameState.RUNNING) {
 
           }
           // Else do nothing?
@@ -335,7 +341,7 @@ $(function(){
       }
 
       let bodyIDs = frames.RetrieveBodyIDs(frame);
-      if (isRunning) { // if game is already running, we only care about the data of our player of focus
+      if (gameState == GameState.RUNNING) { // if game is already running, we only care about the data of our player of focus
         for (let bodyIndex = 0; bodyIndex < bodyIDs.length; bodyIndex++) {
           let bodyID = bodyIDs[bodyIndex];
           console.log(bodyID);
