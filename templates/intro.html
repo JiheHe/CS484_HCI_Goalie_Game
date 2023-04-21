@@ -1,45 +1,38 @@
-<!DOCTYPE html>
-<html>
-<head>
-   <link rel="stylesheet" href="static/intro.css">
-</head>
+{% extends "templates/main.html" %}
 
-<body>
+{% block introPage %}
+<h1>Intro Page</h1>
+<div>
+   <p> Attractive Visuals</p>
+   <p> Instructions to start the game</p>
+   <input id="mockdata" type="submit" name="mock_jump_button" value="Clear here to mock user JUMP!"/>
+</div>
 
-   <h1>Intro Page</h1>
-   <div>
-      <p> Attractive Visuals</p>
-      <p> Instructions to start the game</p>
-      <input id="mockdata" type="submit" name="mock_jump_button" value="Clear here to mock user JUMP!"/>
+<div class="popup">
+   <div class="popup-content">
+   <div class="timer-instruction"></div>
+      <div class="timer"></div>
    </div>
+</div>
 
-	<div class="popup">
-		<div class="popup-content">
-      <div class="timer-instruction"></div>
-			<div class="timer"></div>
-		</div>
-	</div>
+<script>
+   let popup = document.querySelector('.popup');
+   let popupBtn = document.getElementById("mockdata");
 
-   <script>
-		let popup = document.querySelector('.popup');
-      let popupBtn = document.getElementById("mockdata");
-
-      popupBtn.onclick = function() {
-         popup.style.display = "block";
-         const readytime = 5;
-         let count = readytime;
-         let curinterval = setInterval(function() {
-            count--;
-            document.querySelector('.timer-instruction').innerHTML = "Game starts in";
-            document.querySelector('.timer').innerHTML = count + " s";
-            if (count <= 0) {
-               clearInterval(curinterval);
-               popup.style.display = "none";
-               window.location.replace("./game");
-            }
-         }, 1000);
-      }
-      
-	</script>
-</body>
-</html>
+   popupBtn.onclick = function() {
+      popup.style.display = "block";
+      const readytime = 5;
+      let count = readytime;
+      let curinterval = setInterval(function() {
+         count--;
+         document.querySelector('.timer-instruction').innerHTML = "Game starts in";
+         document.querySelector('.timer').innerHTML = count + " s";
+         if (count <= 0) {
+            clearInterval(curinterval);
+            popup.style.display = "none";
+            window.location.replace("./game");
+         }
+      }, 1000);
+   }
+</script>
+{% endblock %}

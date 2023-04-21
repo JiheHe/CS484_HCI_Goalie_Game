@@ -1,12 +1,7 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <link rel="stylesheet" href="/static/game.css">
-</head>
+{% extends "templates/main.html" %}
 
-<body>
-
-  <h1>Game Page</h1>
+{% block introPage %}
+<h1>Game Page</h1>
   
   <div class="score-board">
     <text>
@@ -39,11 +34,5 @@
 			<div class="timeup-timer"></div>
 		</div>
 	</div>
-  
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
-  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
-  <script src= "https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-  <script src="/static/game.js"></script>
-</body>
-</html>
+{% endblock %}
