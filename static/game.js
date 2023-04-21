@@ -237,7 +237,7 @@ $(function(){
   let canvasWidth;
   let canvasHeight;
 
-  let inSessionPlayerID = 502; // the id of the player in session, our targetID of focus. Just a test value. TODO.
+  let inSessionPlayerID = 579; // the id of the player in session, our targetID of focus. Just a test value. TODO.
 
   var frames = {
     socket: null,
@@ -299,12 +299,16 @@ $(function(){
     // Takes in a frame, and returns the ids of all valid users ids detected
     RetrieveBodyIDs: function (frame) {
       let playerIDs = [];
-      for (let i = 0; i < frame.groups.body_ids.length; i++) {
+      for (let i = 0; i < frame.people.length; i++) {
+        let person = frame.people[i];
+        playerIDs.push(person.body_id);
+      }
+      /*for (let i = 0; i < frame.groups.body_ids.length; i++) { // nvm don't grab the ordering from group. Grab from people
         let idGroup = frame.groups.body_ids[i];
         for (let j = 0; j < idGroup.length; j++) {
           playerIDs.push(idGroup[j]);
         }
-      }
+      }*/ 
       /*(frame.groups.body_ids).forEach(function(idGroup) { // foreach version
         idGroup.forEach(function(bodyID) {
           playerIDs.push(bodyID);
@@ -351,7 +355,7 @@ $(function(){
           let bodyID = bodyIDs[bodyIndex];
           // console.log(bodyID);
           if (bodyID === inSessionPlayerID) {
-            console.log("Target found. Updating data");
+            console.log("Target found. at index " + bodyIndex + ". Updating data");
             // Player in session still exists! We want this one player's data ONLY.
             return frames.ProcessUpperbodyData(frame, bodyIndex);
           }
