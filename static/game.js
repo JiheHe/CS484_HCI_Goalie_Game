@@ -7,7 +7,7 @@ $(function(){
   };
 
   let count = 0, score = 0, timer = 60; // to-be changed to 60 or 40 or 30, or 5(for testing)
-  let gameState = GameState.INACTIVE; // true; // TODO: isRunning should start false. And the intro scene logic should enable it to true if a session is confirmed
+  let gameState = GameState.PAUSED; // INACTIVE // TODO: isRunning should start false. And the intro scene logic should enable it to true if a session is confirmed
   let request = null;
 
   // instead of listening to mousemove, listen to change in player position
@@ -373,10 +373,26 @@ $(function(){
         // idea:
         // User hovers right hand over certain region, check for collision for certain number of seconds. First come first serve, ranked by Z depth.
         // update inSessionPlayerID to the choice selector if choose to continue
+        let closestBodyData = null;
+        let smallestZDepth = Infinity;
+        // Find the user with the closest z axis (smallest number);
         for (let bodyIndex = 0; bodyIndex < bodyIDs.length; bodyIndex++) {
-          // Find the user with the closest z axis. 
-          
+          let bodyData = frames.ProcessUpperbodyData(frame, bodyIndex);
+          if (bodyData.goalieRightHandCenterPosition != null) { // someone's showing their right hand ;D
+            let rightHandZDepth = bodyData.goalieRightHandCenterPosition.z;
+            if (rightHandZDepth < smallestZDepth) {
+              smallestZDepth = rightHandZDepth;
+              closestBodyData = [ bodyData, bodyIDs[bodyIndex] ]; // stores calculated upperbody data and user id
+            }
+          }
         }
+        // Set the current user in session to the closest person
+        // inSessionPlayerID = closestBodyData[1];
+        // Update right hand data to it
+        updateGoaliePosition(".goalkeeperLeftHand", closestBodyData[0].goalieLeftHandCenterPosition, {x:0, y:0}, closestBodyData[0].goalieLeftHandCenterRotation)
+        // If goalie hand is in Option position, then start count down. First come first serve lock (i.e. first user that does this gets to retain ownership until leaving option)
+        // probably use a boolean above.
+        // TODO: ...
       }
       else if (gameState == GameState.INACTIVE) { // game not running yet, check all present body's data for potential game starter
 
@@ -443,7 +459,7 @@ $(function(){
                                       : null;
       let data = {goalieHeadCenterPosition, goalieLeftHandCenterPosition, goalieRightHandCenterPosition, goalieBodyCenterPosition,
         goalieLeftHandCenterRotation, goalieRightHandCenterRotation};
-      console.log(goalieBodyCenterPosition.z);
+      // console.log(goalieBodyCenterPosition.z);
       
       // return the post-processed data
       return data;
