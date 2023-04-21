@@ -9,7 +9,6 @@ $(function(){
   let count = 0, score = 0, timer = 60; // to-be changed to 60 or 40 or 30, or 5(for testing)
   let gameState = GameState.RUNNING; // true; // TODO: isRunning should start false. And the intro scene logic should enable it to true if a session is confirmed
   let request = null;
-  let goaliePosition = null;
 
   // instead of listening to mousemove, listen to change in player position
   /*window.addEventListener("mousemove", (e) =>{
@@ -235,7 +234,7 @@ $(function(){
   let canvasWidth;
   let canvasHeight;
 
-  let inSessionPlayerID = 49; // the id of the player in session, our targetID of focus. 43 is just a test value
+  let inSessionPlayerID = 59; // the id of the player in session, our targetID of focus. Just a test value
 
   var frames = {
     socket: null,
@@ -249,32 +248,23 @@ $(function(){
       var url = "ws://" + host + "/frames";
       frames.socket = new WebSocket(url);
       frames.socket.onmessage = function (event) {
-        var goaliePositionData = frames.ProcessFrameData(JSON.parse(event.data)); // separate function just in case for future pre processing
-        if (goaliePositionData !== null) {
-          // feed these data into game.js by simply triggering position update function in game.js; no normalization atm
-          // If a game session is running already
+        let processedData = frames.ProcessFrameData(JSON.parse(event.data)); // this function also takes care of state machine transition
+        if (processedData !== null) { // time for classification of data type
           if (gameState == GameState.RUNNING) {
-            // goaliePosition = goaliePositionData;
+            // If a game session is running already, we know the data given will be that of a single goalie/player :D
+            // So simply triggering position update functions for the current goalie
+            var goaliePositionData = processedData;
             updateGoaliePosition(".goalkeeperBody", goaliePositionData.goalieBodyCenterPosition, {x:0, y:0});   // won't be affected by device scaling
             updateGoaliePosition(".goalkeeperHead", goaliePositionData.goalieHeadCenterPosition, {x:0, y:-5}); // can do this because will be relative to game space
             updateGoaliePosition(".goalkeeperLeftHand", goaliePositionData.goalieLeftHandCenterPosition, {x:0, y:0}, goaliePositionData.goalieLeftHandCenterRotation);
             updateGoaliePosition(".goalkeeperRightHand", goaliePositionData.goalieRightHandCenterPosition, {x:0, y:0}, goaliePositionData.goalieRightHandCenterRotation);
           }
-          // If a game session is not running; intro scene stuff; maybe it's the same thing as above.
+          // Are the else if statements even necessary if we are already doing the state machine below? IDK we'll see. Finish bottom part first to see what data can be returned.
           else {
             
           }
         }
-        else if (goaliePositionData === null) { 
-          // TODO: further classification with special codes. I.e. if user left (lack of data), id switch, or just nothing happens.
-          // data can be returned with special codes. Also see game state
-          // If game state is running, then pause
-          if (gameState == GameState.RUNNING) {
-
-          }
-          // Else do nothing?
-          //console.log("No data yet");
-        }
+        // else Null data, useless, we ignore. DO NOTHING.
       }
     },
 
@@ -306,11 +296,17 @@ $(function(){
     // Takes in a frame, and returns the ids of all valid users ids detected
     RetrieveBodyIDs: function (frame) {
       let playerIDs = [];
-      (frame.groups.body_ids).forEach(function(idGroup) { // could also use a for loop with length
+      for (let i = 0; i < frame.groups.body_ids.length; i++) {
+        let idGroup = frame.groups.body_ids[i];
+        for (let j = 0; j < idGroup.length; j++) {
+          playerIDs.push(idGroup[j]);
+        }
+      }
+      /*(frame.groups.body_ids).forEach(function(idGroup) { // foreach version
         idGroup.forEach(function(bodyID) {
           playerIDs.push(bodyID);
         });
-      });
+      });*/
       return playerIDs;
     },
 
@@ -331,6 +327,7 @@ $(function(){
       return { x: canvasX, y: canvasY, z: userZ }; // X and Y normalized, Z not normalized
     },
 
+    // Processes the frame data to determine the next state of the state machine
     ProcessFrameData: function (frame) {
       // console.log(frame);
       // TODO: finish the no-data processing. 
@@ -341,6 +338,7 @@ $(function(){
       }
 
       let bodyIDs = frames.RetrieveBodyIDs(frame);
+
       if (gameState == GameState.RUNNING) { // if game is already running, we only care about the data of our player of focus
         for (let bodyIndex = 0; bodyIndex < bodyIDs.length; bodyIndex++) {
           let bodyID = bodyIDs[bodyIndex];
@@ -350,13 +348,22 @@ $(function(){
             return frames.ProcessUpperbodyData(frame, bodyIndex);
           }
         }
-        // inSessionPlayerId no longer exists... the player has left...
-        // TODO: another edge case: id reassignment.
+        // Logically, as soon as multiple people in the same frame, everyone gets a unique id. Even if someone leaves, those who stay have the same id,
+        // and it's HIGHLY UNLIKELY that someone leaves while another person joins at the SAME FRAME to have the same id transfer edge case happening. 
+        // So we'll safely ignore that case. :). 
+        // This means that if inSessionPlayerID is not found among the list of present IDs, then the player has left the view. So we pause the game.
+        gameState = GameState.PAUSED;
+        return null;
       }
-      else { // game not running yet, check all present body's data for potential game starter
+      else if (gameState == GameState.PAUSED) { // check for ANYONE that picks a choice
+        // update playerIDInSession to the choice selector if choose to continue
+      }
+      else if (gameState == GameState.INACTIVE) { // game not running yet, check all present body's data for potential game starter
 
       }
-
+      else if (gameState == GameState.ONMESSAGE) { // game is displaying some message, user has no control currently, so don't process any data
+        return null;
+      }
     },
 
     // Converts user's upperbody data in Kinetic into the game space coord, as if he's a goalie
