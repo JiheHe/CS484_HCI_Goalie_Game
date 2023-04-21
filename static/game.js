@@ -375,6 +375,7 @@ $(function(){
         // update inSessionPlayerID to the choice selector if choose to continue
         for (let bodyIndex = 0; bodyIndex < bodyIDs.length; bodyIndex++) {
           // Find the user with the closest z axis. 
+          
         }
       }
       else if (gameState == GameState.INACTIVE) { // game not running yet, check all present body's data for potential game starter
