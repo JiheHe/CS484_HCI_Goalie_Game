@@ -16,9 +16,40 @@ body {
   width: 30%;
 }
 
-.goalkeeper {
+.goalkeeperBody {
   position: absolute;
-  width: 12%;
+  width: 15%;
+}
+
+.goalkeeperHead {
+  position: absolute;
+  width: 4.5%;
+}
+
+.goalkeeperLeftHand {
+  position: absolute;
+  width: 5%;
+  transition: transform 0.1s;
+  transform-origin: center center;
+}
+
+.goalkeeperRightHand {
+  position: absolute;
+  width: 5%;
+  transition: transform 0.1s; /* tuning parameter: rate of data collection */
+  transform-origin: center center;
+}
+
+.interactive-range-boundingbox {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background-color: gray;
+  /* Set percentage-based width and height for flexibility */
+  width: 90%;
+  height: 90%;
+  z-index: -1;
 }
 
 text {

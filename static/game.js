@@ -19,14 +19,6 @@ $(function(){
     if (timer == 0){
         endGame();
     }
-    if (goaliePosition !== null) {
-      let headPosition = goaliePosition.goalieHeadCenterPosition;
-      gsap.to(".goalkeeper", {
-          duration: 0.4,
-          x: headPosition.x,
-          y: headPosition.y,
-      });
-    }
   }, 1000);
 
   interval2 = setInterval(function(){
@@ -41,8 +33,11 @@ $(function(){
 
         setTimeout( function() {
             let rect1 = document.querySelector(".football").getBoundingClientRect(),
-            rect2 = document.querySelector(".goalkeeper").getBoundingClientRect();
-            if (checkOverlap(rect1, rect2)){
+            rect2 = document.querySelector(".goalkeeperBody").getBoundingClientRect(),
+            rect3 = document.querySelector(".goalkeeperHead").getBoundingClientRect(),
+            rect4 = document.querySelector(".goalkeeperRightHand").getBoundingClientRect(),
+            rect5 = document.querySelector(".goalkeeperLeftHand").getBoundingClientRect();
+            if (checkOverlap(rect1, rect2) || checkOverlap(rect1, rect3) || checkOverlap(rect1, rect4) || checkOverlap(rect1, rect5)){
                 score += 1;
                 if (score == 5){
                     reminderOfLevelUp();
@@ -119,8 +114,8 @@ $(function(){
 
   function footballShot() {
     $('.football').css({
-        left:  getRandomXandY(100, 1000),
-        top: getRandomXandY(200, 400),
+        left:  getRandomXandY(100, 1000), // Can hard tune since game space pixel. But % better always
+        top: getRandomXandY(200, 300),  // NOTE: ball spawn Y location is restricted, since user interaction range is scaled
         transform: 'scale(1)'
     })
 
@@ -141,6 +136,86 @@ $(function(){
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 
+  function updateGoaliePosition(goalieBodyPart, partPosition, partOffset, partRotation = null) {
+    if (partPosition !== null) {
+      // console.log("Goalie position is: x = " + partPosition.x + " y = " + partPosition.y);
+      let rect = document.querySelector(goalieBodyPart).getBoundingClientRect(); // need to center it. Image 0 coord is at bottom left, need to offset.
+      /*let rotationDegrees = calculatePartRotation(partRotation, // for memory
+        goalieBodyPart == ".goalkeeperLeftHand" ? angleHistoryLeft 
+          : goalieBodyPart == ".goalkeeperRightHand" ? angleHistoryRight : null,
+          goalieBodyPart); // check rotation*/
+      let rotationDegrees = calculatePartRotation(partRotation, goalieBodyPart);
+      rotationDegrees = rotationDegrees == null ? 0 : rotationDegrees;
+      gsap.to(goalieBodyPart, {
+          duration: 0.3,
+          x: partPosition.x - rect.width/2 + partOffset.x,  // center first, then apply the offset for visual appeal
+          y: partPosition.y - rect.height/2 + partOffset.y,
+          rotation: rotationDegrees
+      });
+    }
+  }
+
+  // Don't think the smoothing version is necessary once I got parameters right... will keep as memory :3
+  /*const smoothingFactor = 1; // Adjust this value to control the level of smoothing. Trade off between responding speed vs flucutation. Also a tuning parameter
+  let angleHistoryLeft = [];
+  let angleHistoryRight = [];
+  function calculatePartRotation(partRotation, angleHistory, goalieBodyPart) {
+    if (partRotation !== null) {
+      const rotationDegrees = partRotation.yaw * (180 / Math.PI);
+      angleHistory.push(rotationDegrees);
+
+      if (angleHistory.length > smoothingFactor) {
+        angleHistory.shift();
+      }
+      const averageRotation = angleHistory.reduce((a, b) => a + b, 0) / angleHistory.length;
+      
+      if (goalieBodyPart == ".goalkeeperLeftHand") return (-averageRotation + 90);
+      else if (goalieBodyPart == ".goalkeeperRightHand") return (-averageRotation - 90);
+    }
+    return null;
+  }*/
+
+  function calculatePartRotation(partRotation, goalieBodyPart) {
+    if (partRotation !== null) {
+      const rotationDegrees = partRotation.yaw * (180 / Math.PI); // so glad yaw is the right one... did some playing around
+      
+      if (goalieBodyPart == ".goalkeeperLeftHand") return (-rotationDegrees + 90);
+      else if (goalieBodyPart == ".goalkeeperRightHand") return (-rotationDegrees - 90);
+    }
+    return null;
+  }
+
+  function getElementSize(elementId) {
+    const element = document.getElementById(elementId);
+    console.log(element);
+    const width = element.offsetWidth;
+    const height = element.offsetHeight;
+  
+    return { width, height };
+  }
+
+  function quaternionToEuler(q) {
+    const { w, x, y, z } = q;
+  
+    // Calculate roll, pitch, yaw (in radians)
+    const sinr_cosp = 2 * (w * x + y * z);
+    const cosr_cosp = 1 - 2 * (x * x + y * y);
+    const roll = Math.atan2(sinr_cosp, cosr_cosp);
+  
+    const sinp = 2 * (w * y - z * x);
+    let pitch;
+    if (Math.abs(sinp) >= 1)
+      pitch = Math.sign(sinp) * Math.PI / 2;
+    else
+      pitch = Math.asin(sinp);
+  
+    const siny_cosp = 2 * (w * z + x * y);
+    const cosy_cosp = 1 - 2 * (y * y + z * z);
+    const yaw = Math.atan2(siny_cosp, cosy_cosp);
+  
+    return { roll, pitch, yaw };
+  }
+
   ////////////////////////////////////////////////// Game data retrieval and processing ////////////////////////////////////
   //var host = "localhost:4444";
   var host = "cpsc484-04.yale.internal:8888" // this is to connect to the real time display data at hillhouse
@@ -149,10 +224,20 @@ $(function(){
     // twod.start();
   });
 
+  const horizontalFOV = 120 * (Math.PI / 180); // Convert to radians // given that both FOVs are 120 degrees
+  const verticalFOV = 120 * (Math.PI / 180); // Convert to radians
+  let canvasWidth;
+  let canvasHeight;
+
   var frames = {
     socket: null,
 
-    start: function() {
+    start: function() { // only called once, for initializations
+      let interactiveRangeSize = getElementSize("interactiveRangeBoundingbox");
+      const scaleFactor = 1.6; // for how fast user's "speed" is
+      canvasWidth = interactiveRangeSize.width * scaleFactor; // In pixels
+      canvasHeight = interactiveRangeSize.height * scaleFactor; // In pixels
+
       var url = "ws://" + host + "/frames";
       frames.socket = new WebSocket(url);
       frames.socket.onmessage = function (event) {
@@ -161,8 +246,12 @@ $(function(){
         if (goaliePositionData !== null) {
           // feed these data into game.js by simply triggering position update function in game.js; no normalization atm
           // If game is running already
-          goaliePosition = goaliePositionData;
-          console.log("Data receieved");
+          // goaliePosition = goaliePositionData;
+          updateGoaliePosition(".goalkeeperBody", goaliePositionData.goalieBodyCenterPosition, {x:0, y:0});   // won't be affected by device scaling
+          updateGoaliePosition(".goalkeeperHead", goaliePositionData.goalieHeadCenterPosition, {x:0, y:-5}); // can do this because will be relative to game space
+          updateGoaliePosition(".goalkeeperLeftHand", goaliePositionData.goalieLeftHandCenterPosition, {x:0, y:0}, goaliePositionData.goalieLeftHandCenterRotation);
+          updateGoaliePosition(".goalkeeperRightHand", goaliePositionData.goalieRightHandCenterPosition, {x:0, y:0}, goaliePositionData.goalieRightHandCenterRotation);
+          //console.log("Data receieved");
           // UpdateObjectPosition (to be implemented in game state)
         }
         else if (goaliePositionData === null) { 
@@ -170,7 +259,7 @@ $(function(){
           // data can be returned with special codes. Also see game state
           // If game state is running, then pause
           // Else do nothing
-          console.log("No data yet");
+          //console.log("No data yet");
         }
       }
     },
@@ -182,8 +271,41 @@ $(function(){
               z: frame.people[playerId].joints[jointId].position.z};
     },
 
+    RetrieveJointOrientation: function (frame, playerId, jointId) { // return value in Euler
+      return quaternionToEuler({w: frame.people[playerId].joints[jointId].orientation.w,
+                                x: frame.people[playerId].joints[jointId].orientation.x,
+                                y: frame.people[playerId].joints[jointId].orientation.y,
+                                z: frame.people[playerId].joints[jointId].orientation.z});
+    },
+
+    RetrieveJointPosValidity: function (frame, playerId, jointId) { 
+      return frame.people[playerId].joints[jointId].valid;
+    },
+
+    RetrieveJointPosConfidence: function (frame, playerId, jointId) { 
+      return frame.people[playerId].joints[jointId].confidence;
+    },
+
+    MapKinectPositionToCanvas(kinectPosition) {
+      const userX = kinectPosition.x * -1; // *-1 because the x axis is flipped for kinect
+      const userY = kinectPosition.y;
+      const userZ = kinectPosition.z;
+
+      const halfWidth = Math.tan(horizontalFOV / 2) * userZ;
+      const halfHeight = Math.tan(verticalFOV / 2) * userZ;
+    
+      const normalizedX = (userX + halfWidth) / (2 * halfWidth);
+      const normalizedY = (userY + halfHeight) / (2 * halfHeight);
+
+      const canvasX = normalizedX * canvasWidth - canvasWidth / 2; // we can map x 1 to 1, so center it ;D
+      const canvasY = normalizedY * canvasHeight - canvasHeight / 3 // not diving by 2 because we can't map y 1 to 1 due to display height diff; need some offsets. TUNABLE
+    
+      return { x: canvasX, y: canvasY, z: userZ }; // X and Y normalized, Z not normalized
+    },
+
     ProcessUpperbodyData: function (frame) {
       var data = null;
+      // console.log(frame);
       // TODO: finish the no-data processing. 
       // If there's a game session running, then Pause
       // Else do nothing (Return null)
@@ -192,42 +314,59 @@ $(function(){
       }
 
       // Assume single player for now. This step just extracts all the user raw upperbody joint data. No normalization needed atm
-      var pelvisPosition = frames.RetreiveJointPosition(frame, 0, 0);
+      // var pelvisPosition = frames.RetreiveJointPosition(frame, 0, 0);
       var spineNavalPosition = frames.RetreiveJointPosition(frame, 0, 1); // used for spawning body torso
+      var spineNavalPosValidity = frames.RetrieveJointPosValidity(frame, 0, 1);
       var spineChestPosition = frames.RetreiveJointPosition(frame, 0, 2); // used for spawning body torso (a weighted avg between the two)
-      var neckPosition = frames.RetreiveJointPosition(frame, 0, 3);
-      var clavicleLeftPosition = frames.RetreiveJointPosition(frame, 0, 4);
-      var shoulderLeftPosition = frames.RetreiveJointPosition(frame, 0, 5);
-      var elbowLeftPosition = frames.RetreiveJointPosition(frame, 0, 6);
-      var wristLeftPosition = frames.RetreiveJointPosition(frame, 0, 7);
+      var spineChestPosValidity = frames.RetrieveJointPosValidity(frame, 0, 2);
+      //var neckPosition = frames.RetreiveJointPosition(frame, 0, 3);
+      //var clavicleLeftPosition = frames.RetreiveJointPosition(frame, 0, 4);
+      //var shoulderLeftPosition = frames.RetreiveJointPosition(frame, 0, 5);
+      //var elbowLeftPosition = frames.RetreiveJointPosition(frame, 0, 6);
+      //var wristLeftPosition = frames.RetreiveJointPosition(frame, 0, 7);
       var handLeftPosition = frames.RetreiveJointPosition(frame, 0, 8); // used for spawning left hand (or goalie's right hand)
-      var handTipLeftPosition = frames.RetreiveJointPosition(frame, 0, 9);
-      var thumbLeftPosition = frames.RetreiveJointPosition(frame, 0, 10);
-      var clavicleRightPosition = frames.RetreiveJointPosition(frame, 0, 11);
-      var shoulderRightPosition = frames.RetreiveJointPosition(frame, 0, 12);
-      var elbowRightPosition = frames.RetreiveJointPosition(frame, 0, 13);
-      var wristRightPosition = frames.RetreiveJointPosition(frame, 0, 14);
+      var handLeftRotation = frames.RetrieveJointOrientation(frame, 0, 8);
+      var handLeftPosValidity = frames.RetrieveJointPosValidity(frame, 0, 8);
+      //var handTipLeftPosition = frames.RetreiveJointPosition(frame, 0, 9);
+      //var thumbLeftPosition = frames.RetreiveJointPosition(frame, 0, 10);
+      //var clavicleRightPosition = frames.RetreiveJointPosition(frame, 0, 11);
+      //var shoulderRightPosition = frames.RetreiveJointPosition(frame, 0, 12);
+      //var elbowRightPosition = frames.RetreiveJointPosition(frame, 0, 13);
+      //var wristRightPosition = frames.RetreiveJointPosition(frame, 0, 14);
       var handRightPosition = frames.RetreiveJointPosition(frame, 0, 15); // used for spawning right hand (or goalie's left hand)
-      var handTipRightPosition = frames.RetreiveJointPosition(frame, 0, 16);
-      var thumbRightPosition = frames.RetreiveJointPosition(frame, 0, 17);
-      var headPosition = frames.RetreiveJointPosition(frame, 0, 26);
-      var nosePosition = frames.RetreiveJointPosition(frame, 0, 27); // used for spawning head
-      var eyeLeftPosition = frames.RetreiveJointPosition(frame, 0, 28);
-      var earLeftPosition = frames.RetreiveJointPosition(frame, 0, 29);
-      var eyeRightPosition = frames.RetreiveJointPosition(frame, 0, 30);
-      var earRightPosition = frames.RetreiveJointPosition(frame, 0, 31);
+      var handRightRotation = frames.RetrieveJointOrientation(frame, 0, 15);
+      var handRightPosValidity = frames.RetrieveJointPosValidity(frame, 0, 15);
+      //var handTipRightPosition = frames.RetreiveJointPosition(frame, 0, 16);
+      //var thumbRightPosition = frames.RetreiveJointPosition(frame, 0, 17);
+      //var headPosition = frames.RetreiveJointPosition(frame, 0, 26);
+      //var nosePosition = frames.RetreiveJointPosition(frame, 0, 27); 
+      var eyeLeftPosition = frames.RetreiveJointPosition(frame, 0, 28); // used for spawning head
+      var eyeLeftPosValidity = frames.RetrieveJointPosValidity(frame, 0, 28);
+      //var earLeftPosition = frames.RetreiveJointPosition(frame, 0, 29);
+      var eyeRightPosition = frames.RetreiveJointPosition(frame, 0, 30); // used for spawning head
+      var eyeRightPosValidity = frames.RetrieveJointPosValidity(frame, 0, 30);
+      //var earRightPosition = frames.RetreiveJointPosition(frame, 0, 31);
 
       // post-process the data so it becomes viable in game. TODO: fine tune weights and certain ratios to transform from raw data to game space data
       // Could add in more positions for interpolation if needed
       // positions are relative to the goalie's view from the goal, inverse from user's
       var alpha = 0.5; // weight parameter.
-      var goalieBodyCenterPosition = {x: alpha * spineNavalPosition.x + (1-alpha) * spineChestPosition.x,
-                                      y: alpha * spineNavalPosition.y + (1-alpha) * spineChestPosition.y,
-                                      z: alpha * spineNavalPosition.z + (1-alpha) * spineChestPosition.z};
-      var goalieLeftHandCenterPosition = handRightPosition;
-      var goalieRightHandCenterPosition = handLeftPosition;
-      var goalieHeadCenterPosition = nosePosition;
-      data = {goalieHeadCenterPosition, goalieLeftHandCenterPosition, goalieRightHandCenterPosition, goalieBodyCenterPosition};
+      var goalieBodyCenterPosition = (spineNavalPosValidity && spineChestPosValidity) ? 
+                                     frames.MapKinectPositionToCanvas({x: alpha * spineNavalPosition.x + (1-alpha) * spineChestPosition.x,
+                                                                       y: alpha * spineNavalPosition.y + (1-alpha) * spineChestPosition.y,
+                                                                       z: alpha * spineNavalPosition.z + (1-alpha) * spineChestPosition.z})
+                                     : null;
+      var goalieLeftHandCenterPosition = handRightPosValidity ? frames.MapKinectPositionToCanvas(handRightPosition) : null;
+      var goalieLeftHandCenterRotation = handRightPosValidity ? handRightRotation : null;
+      var goalieRightHandCenterPosition = handLeftPosValidity ? frames.MapKinectPositionToCanvas(handLeftPosition) : null;
+      var goalieRightHandCenterRotation = handLeftPosValidity ? handLeftRotation : null;
+      var goalieHeadCenterPosition = (eyeLeftPosValidity && eyeRightPosValidity) ? 
+                                     frames.MapKinectPositionToCanvas({x: alpha * eyeLeftPosition.x + (1-alpha) * eyeRightPosition.x,
+                                                                       y: alpha * eyeLeftPosition.y + (1-alpha) * eyeRightPosition.y,
+                                                                       z: alpha * eyeLeftPosition.z + (1-alpha) * eyeRightPosition.z})
+                                      : null;
+      data = {goalieHeadCenterPosition, goalieLeftHandCenterPosition, goalieRightHandCenterPosition, goalieBodyCenterPosition,
+        goalieLeftHandCenterRotation, goalieRightHandCenterRotation};
       
       // return the post-processed data
       return data;
