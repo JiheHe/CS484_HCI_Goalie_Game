@@ -42,7 +42,7 @@ $(function(){
             rect3 = document.querySelector(".goalkeeperHead").getBoundingClientRect(),
             rect4 = document.querySelector(".goalkeeperRightHand").getBoundingClientRect(),
             rect5 = document.querySelector(".goalkeeperLeftHand").getBoundingClientRect();
-            if (checkOverlap(rect1, rect2) || checkOverlap(rect1, rect3) || checkOverlap(rect1, rect4) || checkOverlap(rect1, rect5)){
+            if (checkOverlaps(rect1, [rect2, rect3, rect4, rect5])){
                 score += 1;
                 if (score == 5){
                     reminderOfLevelUp();
@@ -108,6 +108,9 @@ $(function(){
      }, 1000);
   }
 
+  function checkOverlaps(rect1, rects) {
+    return atLeastARectOverlaps = rects.some(rect => checkOverlap(rect1, rect));
+  }
 
   function checkOverlap(rect1, rect2){
      return res = !(rect1.right < rect2.left || 
@@ -234,7 +237,7 @@ $(function(){
   let canvasWidth;
   let canvasHeight;
 
-  let inSessionPlayerID = 59; // the id of the player in session, our targetID of focus. Just a test value
+  let inSessionPlayerID = 86; // the id of the player in session, our targetID of focus. Just a test value
 
   var frames = {
     socket: null,
@@ -350,13 +353,21 @@ $(function(){
         }
         // Logically, as soon as multiple people in the same frame, everyone gets a unique id. Even if someone leaves, those who stay have the same id,
         // and it's HIGHLY UNLIKELY that someone leaves while another person joins at the SAME FRAME to have the same id transfer edge case happening. 
-        // So we'll safely ignore that case. :). 
+        // So we'll safely ignore that case. :). Potential issue: 1s data latency...
         // This means that if inSessionPlayerID is not found among the list of present IDs, then the player has left the view. So we pause the game.
         gameState = GameState.PAUSED;
         return null;
       }
-      else if (gameState == GameState.PAUSED) { // check for ANYONE that picks a choice
-        // update playerIDInSession to the choice selector if choose to continue
+      else if (gameState == GameState.PAUSED) { // check for ANYONE that picks a choice; this is a per-user process
+        for (let bodyIndex = 0; bodyIndex < bodyIDs.length; bodyIndex++) {
+          let bodyData = frames.ProcessUpperbodyData(frame, bodyIndex);
+          // idea:
+          // extract this user's right hand data (coord position of goalie's left hand on screen)
+          // spawn a mini hand on screen showcasing where this user's right hand is at
+          // once hand enters option zone, start a timer...? 
+          // OR we do a pose detection. Which is easier... in a way? Need team to decide. TODO.
+        }
+        // update inSessionPlayerID to the choice selector if choose to continue
       }
       else if (gameState == GameState.INACTIVE) { // game not running yet, check all present body's data for potential game starter
 
