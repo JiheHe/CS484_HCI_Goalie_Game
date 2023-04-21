@@ -7,7 +7,7 @@ $(function(){
   };
 
   let count = 0, score = 0, timer = 60; // to-be changed to 60 or 40 or 30, or 5(for testing)
-  let gameState = GameState.RUNNING; // true; // TODO: isRunning should start false. And the intro scene logic should enable it to true if a session is confirmed
+  let gameState = GameState.INACTIVE; // true; // TODO: isRunning should start false. And the intro scene logic should enable it to true if a session is confirmed
   let request = null;
 
   // instead of listening to mousemove, listen to change in player position
@@ -19,15 +19,15 @@ $(function(){
     });
   });*/
 
-  interval1 = setInterval(function(){
-    $('.curtime').text(timer--);
-    if (timer == 0){
-        endGame();
-    }
-  }, 1000);
+  if (gameState == GameState.RUNNING) {
+    interval1 = setInterval(function(){
+      $('.curtime').text(timer--);
+      if (timer == 0){
+          endGame();
+      }
+    }, 1000);
 
-  interval2 = setInterval(function(){
-    if (gameState == GameState.RUNNING){
+    interval2 = setInterval(function(){
         footballShot(); 
 
         setTimeout( function() {
@@ -51,10 +51,10 @@ $(function(){
             editScore();
             $('.football').css("visibility", "hidden");
 
-        }, 1700);
-    } 
+        }, 1700); 
 
-  }, 3000);
+    }, 3000);
+  }
 
 
   function endGame(){
@@ -229,6 +229,7 @@ $(function(){
   var host = "cpsc484-04.yale.internal:8888" // this is to connect to the real time display data at hillhouse
   $(document).ready(function() {
     frames.start();
+    console.log("I'm executed" + (new Date()).getSeconds());
     // twod.start();
   });
 
