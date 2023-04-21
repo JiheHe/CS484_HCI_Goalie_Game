@@ -1,7 +1,7 @@
 $(function(){
 
   let count = 0, score = 0, timer = 60; // to-be changed to 60 or 40 or 30, or 5(for testing)
-  let isRunning = true;
+  let isRunning = true; // TODO: isRunning should start false. And the intro scene logic should enable it to true if a session is confirmed
   let request = null;
   let goaliePosition = null;
 
@@ -229,6 +229,8 @@ $(function(){
   let canvasWidth;
   let canvasHeight;
 
+  let inSessionPlayerID = 43; // the id of the player in session, our targetID of focus. 43 is just a test value
+
   var frames = {
     socket: null,
 
@@ -241,24 +243,30 @@ $(function(){
       var url = "ws://" + host + "/frames";
       frames.socket = new WebSocket(url);
       frames.socket.onmessage = function (event) {
-        var goaliePositionData = frames.ProcessUpperbodyData(JSON.parse(event.data)); // separate function just in case for future pre processing
-        // TODO: add a receiver function for the command; part of the game state implementation
+        var goaliePositionData = frames.ProcessFrameData(JSON.parse(event.data)); // separate function just in case for future pre processing
         if (goaliePositionData !== null) {
           // feed these data into game.js by simply triggering position update function in game.js; no normalization atm
-          // If game is running already
-          // goaliePosition = goaliePositionData;
-          updateGoaliePosition(".goalkeeperBody", goaliePositionData.goalieBodyCenterPosition, {x:0, y:0});   // won't be affected by device scaling
-          updateGoaliePosition(".goalkeeperHead", goaliePositionData.goalieHeadCenterPosition, {x:0, y:-5}); // can do this because will be relative to game space
-          updateGoaliePosition(".goalkeeperLeftHand", goaliePositionData.goalieLeftHandCenterPosition, {x:0, y:0}, goaliePositionData.goalieLeftHandCenterRotation);
-          updateGoaliePosition(".goalkeeperRightHand", goaliePositionData.goalieRightHandCenterPosition, {x:0, y:0}, goaliePositionData.goalieRightHandCenterRotation);
-          //console.log("Data receieved");
-          // UpdateObjectPosition (to be implemented in game state)
+          // If a game session is running already
+          if (isRunning) {
+            // goaliePosition = goaliePositionData;
+            updateGoaliePosition(".goalkeeperBody", goaliePositionData.goalieBodyCenterPosition, {x:0, y:0});   // won't be affected by device scaling
+            updateGoaliePosition(".goalkeeperHead", goaliePositionData.goalieHeadCenterPosition, {x:0, y:-5}); // can do this because will be relative to game space
+            updateGoaliePosition(".goalkeeperLeftHand", goaliePositionData.goalieLeftHandCenterPosition, {x:0, y:0}, goaliePositionData.goalieLeftHandCenterRotation);
+            updateGoaliePosition(".goalkeeperRightHand", goaliePositionData.goalieRightHandCenterPosition, {x:0, y:0}, goaliePositionData.goalieRightHandCenterRotation);
+          }
+          // If a game session is not running; intro scene stuff; maybe it's the same thing as above.
+          else {
+            
+          }
         }
         else if (goaliePositionData === null) { 
           // TODO: further classification with special codes. I.e. if user left (lack of data), id switch, or just nothing happens.
           // data can be returned with special codes. Also see game state
           // If game state is running, then pause
-          // Else do nothing
+          if (isRunning) {
+
+          }
+          // Else do nothing?
           //console.log("No data yet");
         }
       }
@@ -271,6 +279,7 @@ $(function(){
               z: frame.people[playerId].joints[jointId].position.z};
     },
 
+    // Takes in a frame, and returns the Euler rotation of the desired joint
     RetrieveJointOrientation: function (frame, playerId, jointId) { // return value in Euler
       return quaternionToEuler({w: frame.people[playerId].joints[jointId].orientation.w,
                                 x: frame.people[playerId].joints[jointId].orientation.x,
@@ -278,12 +287,25 @@ $(function(){
                                 z: frame.people[playerId].joints[jointId].orientation.z});
     },
 
+    // Takes in a frame, and returns the sensor data validity of the desired joint
     RetrieveJointPosValidity: function (frame, playerId, jointId) { 
       return frame.people[playerId].joints[jointId].valid;
     },
 
+    // Takes in a frame, and returns the sensor data confidence of the desired joint
     RetrieveJointPosConfidence: function (frame, playerId, jointId) { 
       return frame.people[playerId].joints[jointId].confidence;
+    },
+
+    // Takes in a frame, and returns the ids of all valid users ids detected
+    RetrieveBodyIDs: function (frame) {
+      let playerIDs = [];
+      (frame.groups.body_ids).forEach(function(idGroup) { // could also use a for loop with length
+        idGroup.forEach(function(bodyID) {
+          playerIDs.push(bodyID);
+        });
+      });
+      return playerIDs;
     },
 
     MapKinectPositionToCanvas(kinectPosition) {
@@ -303,48 +325,68 @@ $(function(){
       return { x: canvasX, y: canvasY, z: userZ }; // X and Y normalized, Z not normalized
     },
 
-    ProcessUpperbodyData: function (frame) {
-      var data = null;
+    ProcessFrameData: function (frame) {
       // console.log(frame);
       // TODO: finish the no-data processing. 
       // If there's a game session running, then Pause
       // Else do nothing (Return null)
       if (frame.people.length < 1) { // no one present, or player id changed/disappeared due to reassignment (TODO)
-        return data; 
+        return null; 
       }
 
+      let bodyIDs = frames.RetrieveBodyIDs(frame);
+      if (isRunning) { // if game is already running, we only care about the data of our player of focus
+        for (let bodyIndex = 0; bodyIndex < bodyIDs.length; bodyIndex++) {
+          let bodyID = bodyIDs[bodyIndex];
+          console.log(bodyID);
+          if (bodyID == inSessionPlayerID) {
+            // Player in session still exists! We want this one player's data ONLY.
+            return frames.ProcessUpperbodyData(frame, bodyIndex);
+          }
+        }
+        // inSessionPlayerId no longer exists... the player has left...
+        // TODO: another edge case: id reassignment.
+      }
+      else { // game not running yet, check all present body's data for potential game starter
+
+      }
+
+    },
+
+    // Converts user's upperbody data in Kinetic into the game space coord, as if he's a goalie
+    ProcessUpperbodyData: function (frame, bodyIndex) { // bodyIndex is the index of body in array, not necessarily the ID! My bad earlier for using id interchangeably...
       // Assume single player for now. This step just extracts all the user raw upperbody joint data. No normalization needed atm
       // var pelvisPosition = frames.RetreiveJointPosition(frame, 0, 0);
-      var spineNavalPosition = frames.RetreiveJointPosition(frame, 0, 1); // used for spawning body torso
-      var spineNavalPosValidity = frames.RetrieveJointPosValidity(frame, 0, 1);
-      var spineChestPosition = frames.RetreiveJointPosition(frame, 0, 2); // used for spawning body torso (a weighted avg between the two)
-      var spineChestPosValidity = frames.RetrieveJointPosValidity(frame, 0, 2);
+      var spineNavalPosition = frames.RetreiveJointPosition(frame, bodyIndex, 1); // used for spawning body torso
+      var spineNavalPosValidity = frames.RetrieveJointPosValidity(frame, bodyIndex, 1);
+      var spineChestPosition = frames.RetreiveJointPosition(frame, bodyIndex, 2); // used for spawning body torso (a weighted avg between the two)
+      var spineChestPosValidity = frames.RetrieveJointPosValidity(frame, bodyIndex, 2);
       //var neckPosition = frames.RetreiveJointPosition(frame, 0, 3);
       //var clavicleLeftPosition = frames.RetreiveJointPosition(frame, 0, 4);
       //var shoulderLeftPosition = frames.RetreiveJointPosition(frame, 0, 5);
       //var elbowLeftPosition = frames.RetreiveJointPosition(frame, 0, 6);
       //var wristLeftPosition = frames.RetreiveJointPosition(frame, 0, 7);
-      var handLeftPosition = frames.RetreiveJointPosition(frame, 0, 8); // used for spawning left hand (or goalie's right hand)
-      var handLeftRotation = frames.RetrieveJointOrientation(frame, 0, 8);
-      var handLeftPosValidity = frames.RetrieveJointPosValidity(frame, 0, 8);
+      var handLeftPosition = frames.RetreiveJointPosition(frame, bodyIndex, 8); // used for spawning left hand (or goalie's right hand)
+      var handLeftRotation = frames.RetrieveJointOrientation(frame, bodyIndex, 8);
+      var handLeftPosValidity = frames.RetrieveJointPosValidity(frame, bodyIndex, 8);
       //var handTipLeftPosition = frames.RetreiveJointPosition(frame, 0, 9);
       //var thumbLeftPosition = frames.RetreiveJointPosition(frame, 0, 10);
       //var clavicleRightPosition = frames.RetreiveJointPosition(frame, 0, 11);
       //var shoulderRightPosition = frames.RetreiveJointPosition(frame, 0, 12);
       //var elbowRightPosition = frames.RetreiveJointPosition(frame, 0, 13);
       //var wristRightPosition = frames.RetreiveJointPosition(frame, 0, 14);
-      var handRightPosition = frames.RetreiveJointPosition(frame, 0, 15); // used for spawning right hand (or goalie's left hand)
-      var handRightRotation = frames.RetrieveJointOrientation(frame, 0, 15);
-      var handRightPosValidity = frames.RetrieveJointPosValidity(frame, 0, 15);
+      var handRightPosition = frames.RetreiveJointPosition(frame, bodyIndex, 15); // used for spawning right hand (or goalie's left hand)
+      var handRightRotation = frames.RetrieveJointOrientation(frame, bodyIndex, 15);
+      var handRightPosValidity = frames.RetrieveJointPosValidity(frame, bodyIndex, 15);
       //var handTipRightPosition = frames.RetreiveJointPosition(frame, 0, 16);
       //var thumbRightPosition = frames.RetreiveJointPosition(frame, 0, 17);
       //var headPosition = frames.RetreiveJointPosition(frame, 0, 26);
       //var nosePosition = frames.RetreiveJointPosition(frame, 0, 27); 
-      var eyeLeftPosition = frames.RetreiveJointPosition(frame, 0, 28); // used for spawning head
-      var eyeLeftPosValidity = frames.RetrieveJointPosValidity(frame, 0, 28);
+      var eyeLeftPosition = frames.RetreiveJointPosition(frame, bodyIndex, 28); // used for spawning head
+      var eyeLeftPosValidity = frames.RetrieveJointPosValidity(frame, bodyIndex, 28);
       //var earLeftPosition = frames.RetreiveJointPosition(frame, 0, 29);
-      var eyeRightPosition = frames.RetreiveJointPosition(frame, 0, 30); // used for spawning head
-      var eyeRightPosValidity = frames.RetrieveJointPosValidity(frame, 0, 30);
+      var eyeRightPosition = frames.RetreiveJointPosition(frame, bodyIndex, 30); // used for spawning head
+      var eyeRightPosValidity = frames.RetrieveJointPosValidity(frame, bodyIndex, 30);
       //var earRightPosition = frames.RetreiveJointPosition(frame, 0, 31);
 
       // post-process the data so it becomes viable in game. TODO: fine tune weights and certain ratios to transform from raw data to game space data
@@ -365,7 +407,7 @@ $(function(){
                                                                        y: alpha * eyeLeftPosition.y + (1-alpha) * eyeRightPosition.y,
                                                                        z: alpha * eyeLeftPosition.z + (1-alpha) * eyeRightPosition.z})
                                       : null;
-      data = {goalieHeadCenterPosition, goalieLeftHandCenterPosition, goalieRightHandCenterPosition, goalieBodyCenterPosition,
+      let data = {goalieHeadCenterPosition, goalieLeftHandCenterPosition, goalieRightHandCenterPosition, goalieBodyCenterPosition,
         goalieLeftHandCenterRotation, goalieRightHandCenterRotation};
       
       // return the post-processed data
