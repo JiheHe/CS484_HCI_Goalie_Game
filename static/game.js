@@ -237,7 +237,7 @@ $(function(){
   let canvasWidth;
   let canvasHeight;
 
-  let inSessionPlayerID = 579; // the id of the player in session, our targetID of focus. Just a test value. TODO.
+  let inSessionPlayerID = 604; // the id of the player in session, our targetID of focus. Just a test value. TODO.
 
   var frames = {
     socket: null,
@@ -303,7 +303,7 @@ $(function(){
         let person = frame.people[i];
         playerIDs.push(person.body_id);
       }
-      /*for (let i = 0; i < frame.groups.body_ids.length; i++) { // nvm don't grab the ordering from group. Grab from people
+      /*for (let i = 0; i < frame.groups.body_ids.length; i++) { // nvm don't grab the ordering from group. Grab from people. Orderings change!
         let idGroup = frame.groups.body_ids[i];
         for (let j = 0; j < idGroup.length; j++) {
           playerIDs.push(idGroup[j]);
@@ -347,7 +347,7 @@ $(function(){
         return null; 
       }
 
-      let bodyIDs = frames.RetrieveBodyIDs(frame);
+      let bodyIDs = frames.RetrieveBodyIDs(frame); // now bodyIDs are retrieved with respect to the input people array indexing
       console.log(bodyIDs);
 
       if (gameState == GameState.RUNNING) { // if game is already running, we only care about the data of our player of focus
@@ -355,7 +355,7 @@ $(function(){
           let bodyID = bodyIDs[bodyIndex];
           // console.log(bodyID);
           if (bodyID === inSessionPlayerID) {
-            console.log("Target found. at index " + bodyIndex + ". Updating data");
+            // console.log("Target found. at index " + bodyIndex + ". Updating data");
             // Player in session still exists! We want this one player's data ONLY.
             return frames.ProcessUpperbodyData(frame, bodyIndex);
           }
@@ -441,6 +441,7 @@ $(function(){
                                       : null;
       let data = {goalieHeadCenterPosition, goalieLeftHandCenterPosition, goalieRightHandCenterPosition, goalieBodyCenterPosition,
         goalieLeftHandCenterRotation, goalieRightHandCenterRotation};
+      console.log(goalieBodyCenterPosition.z);
       
       // return the post-processed data
       return data;
