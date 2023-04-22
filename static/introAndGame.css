@@ -23,12 +23,49 @@ body {
    position: absolute;
    width: 12%;
  }
+
+ .interactive-range-boundingbox {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  /* background-color: gray; */
+  /* Set percentage-based width and height for flexibility */
+  width: 90%;
+  height: 90%;
+  z-index: -1;
+}
+
+
+ .goalkeeperBody {
+  position: absolute;
+  width: 15%;
+}
+
+.goalkeeperHead {
+  position: absolute;
+  width: 4.5%;
+}
+
+.goalkeeperLeftHand {
+  position: absolute;
+  width: 5%;
+  transition: transform 0.1s;
+  transform-origin: center center;
+}
+
+.goalkeeperRightHand {
+  position: absolute;
+  width: 5%;
+  transition: transform 0.1s; /* tuning parameter: rate of data collection */
+  transform-origin: center center;
+}
  
  text {
    font-size: 20px;
  }
  
- .levelup-reminder, .timeup-reminder {
+ .levelup-reminder, .timeup-reminder, .pause-reminder {
    display: none;
    position: fixed;
    top: 0;
@@ -39,7 +76,7 @@ body {
    z-index: 9999;
  }
  
- .levelup-content, .timeup-content{
+ .levelup-content, .timeup-content, .pause-content{
    font-size: 20px;
    position: absolute;
    top: 50%;
@@ -52,11 +89,11 @@ body {
    text-align: center;
  }
  
- .levelup-instruction, .timeup-instruction{
+ .levelup-instruction, .timeup-instruction, .pause-instruction{
    margin-bottom: 20px;
  }
  
- .levelup-timer, .timeup-timer {
+ .levelup-timer, .timeup-timer, .pause-timer {
    font-size: 17px;
    font-weight: bold;
  }

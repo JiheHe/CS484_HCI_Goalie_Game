@@ -5,7 +5,6 @@
    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
    <script src= "https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-   <script src="/static/script.js"></script>
    <script src="/static/game.js"></script>
 </head>
 
@@ -25,28 +24,6 @@
             <div class="timer"></div>
          </div>
       </div>
-
-      <!-- <script>
-         let popup = document.querySelector('.popup');
-         let popupBtn = document.getElementById("mockdata");
-
-         popupBtn.onclick = function() {
-            popup.style.display = "block";
-            const readytime = 5;
-            let count = readytime;
-            let curinterval = setInterval(function() {
-               count--;
-               document.querySelector('.timer-instruction').innerHTML = "Game starts in";
-               document.querySelector('.timer').innerHTML = count + " s";
-               if (count <= 0) {
-                  clearInterval(curinterval);
-                  popup.style.display = "none";
-                  $('.intropage-container').css("display", "none");
-                  $('.gamepage-container').css("display", "block");
-               }
-            }, 1000);
-         }
-      </script> -->
    </div>
 
    <div class="gamepage-container">
@@ -66,6 +43,10 @@
 
       <div class="game">
          <img class="goalkeeper" src="static/color-goalkeeper.png"/>
+         <!-- <img class="goalkeeperBody" src="static/soccer-shirt.png"/>
+         <img class="goalkeeperHead" src="static/soccer-head.png"/>
+         <img class="goalkeeperLeftHand" src="static/soccer-lefthand.png"/>
+         <img class="goalkeeperRightHand" src="static/soccer-righthand.png"/> -->
          <img class="football" src="static/soccer-ball.jpg"/>
       </div>
 
@@ -76,6 +57,13 @@
             </div>
       </div>
 
+      <div class="pause-reminder">
+            <div class="pause-content">
+            <div class="pause-instruction"></div>
+               <div class="pause-timer"></div>
+            </div>
+      </div>
+
       <div class="timeup-reminder">
             <div class="timeup-content">
             <div class="timeup-instruction"></div>
@@ -83,6 +71,8 @@
             </div>
 	   </div>
    </div>
+
+   <div class="interactive-range-boundingbox" id="interactiveRangeBoundingbox"></div>
 
 
 </body>
