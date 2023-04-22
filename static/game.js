@@ -4,7 +4,7 @@ $(function(){
     RUNNING: 1, // a game session is ongoing
     PAUSED: 2, // a game session is paused
     ONMESSAGE: 3, // (unnecessary?) a game session is showing some message
-    INACTIVE: 4 // (unnecessary?) a game session hasn't started
+    INACTIVE: 4 // a game session hasn't started
   };
   let ballcount = 0, score = 0, timer = 60; // to-be changed to 60 or 40 or 30, or 5(for testing)
   let gameState = GameState.ONTUTORIAL;
@@ -14,7 +14,9 @@ $(function(){
   let popup = document.querySelector('.popup');
   let popupBtn = document.getElementById("mockdata");
 
-  popupBtn.onclick = function() {
+  popupBtn.onclick = function(){introCountDownToStart();};
+
+  function introCountDownToStart() {
     popup.style.display = "block";
     const readytime = 5;
     let count = readytime;
@@ -316,7 +318,7 @@ $(function(){
   const verticalFOV = 120 * (Math.PI / 180); // Convert to radians
   let canvasWidth;
   let canvasHeight;
-  let inSessionPlayerID = 604; // the id of the player in session, our targetID of focus. Just a test value. TODO.
+  let inSessionPlayerID = 12; // the id of the player in session, our targetID of focus. Just a test value. TODO.
 
   var frames = {
     socket: null,
@@ -436,9 +438,8 @@ $(function(){
         pauseGame(); // uncomment me please
         return null;
       }
-      else if (gameState == GameState.PAUSED) { // check for ANYONE that picks a choice; this is a per-user process
-        /*
-        console.log("GAME IS PAUSED");
+      else if (!gameStarted && gameState === GameState.ONTUTORIAL){ // check for ANYONE that picks a choice; this is a per-user process
+        console.log("GAME should start");
         // idea:
         // User hovers right hand over certain region, check for collision for certain number of seconds. First come first serve, ranked by Z depth.
         // update inSessionPlayerID to the choice selector if choose to continue
@@ -455,14 +456,19 @@ $(function(){
             }
           }
         }
-        // Set the current user in session to the closest person
-        // inSessionPlayerID = closestBodyData[1];
         // Update right hand data to it
         updateGoaliePosition(".goalkeeperLeftHand", closestBodyData[0].goalieLeftHandCenterPosition, {x:0, y:0}, closestBodyData[0].goalieLeftHandCenterRotation)
         // If goalie hand is in Option position, then start count down. First come first serve lock (i.e. first user that does this gets to retain ownership until leaving option)
         // probably use a boolean above.
+        // quick start code below without considering timer and ownership yet
+        let rect1 = document.getElementById("mockdata").getBoundingClientRect(),
+            rect5 = document.querySelector(".goalkeeperLeftHand").getBoundingClientRect();
+        if (checkOverlap(rect1, rect5)){
+            // Set the current user in session to the closest person
+          inSessionPlayerID = closestBodyData[1];
+          introCountDownToStart();
+        }
         // TODO: ...
-        */
       }
       else if (gameState == GameState.INACTIVE) { // game not running yet, check all present body's data for potential game starter
 
