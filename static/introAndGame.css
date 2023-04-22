@@ -65,7 +65,7 @@ body {
    font-size: 20px;
  }
  
- .levelup-reminder, .timeup-reminder, .pause-reminder {
+ .tutorial-reminder, .levelup-reminder, .timeup-reminder, .pause-reminder {
    display: none;
    position: fixed;
    top: 0;
@@ -76,7 +76,7 @@ body {
    z-index: 9999;
  }
  
- .levelup-content, .timeup-content, .pause-content{
+ .tutorial-content, .levelup-content, .timeup-content, .pause-content{
    font-size: 20px;
    position: absolute;
    top: 50%;
@@ -88,12 +88,20 @@ body {
    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
    text-align: center;
  }
- 
- .levelup-instruction, .timeup-instruction, .pause-instruction{
+
+ /* .tutorial-content, .levelup-content{
+  background-color: lemonchiffon;
+ } */
+ .tutorial-header{
+  font-weight: bold;
+ }
+
+ .tutorial-instruction, .levelup-instruction, .timeup-instruction, .pause-instruction{
    margin-bottom: 20px;
  }
+
  
- .levelup-timer, .timeup-timer, .pause-timer {
+ .tutorial-timer, .levelup-timer, .timeup-timer, .pause-timer {
    font-size: 17px;
    font-weight: bold;
  }
@@ -141,5 +149,4 @@ p{
 .timer {
    font-size: 2rem;
    font-weight: bold;
-   margin-bottom: 20px;
 }
