@@ -5,7 +5,7 @@ body {
 .football {
     position: absolute;
     visibility: hidden;
-    transition: 0.7s linear;
+    transition: 1.5s linear;
   }
 
 .gamepage-container{

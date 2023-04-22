@@ -4,17 +4,16 @@ $(function(){
     RUNNING: 1, // a game session is ongoing
     PAUSED: 2, // a game session is paused
     ONMESSAGE: 3, // (unnecessary?) a game session is showing some message
-    INACTIVE: 4 // a game session hasn't started
+    NOTINGAME: 4 // a game session hasn't started
   };
   let ballcount = 0, score = 0, timer = 60; // to-be changed to 60 or 40 or 30, or 5(for testing)
-  let gameState = GameState.ONTUTORIAL;
-  let gameStarted = false;
+  let gameState = GameState.NOTINGAME;
   let request = null;
 
   let popup = document.querySelector('.popup');
-  let popupBtn = document.getElementById("mockdata");
+  // let popupBtn = document.getElementById("mockdata");
 
-  popupBtn.onclick = function(){introCountDownToStart();};
+  // popupBtn.onclick = function(){introCountDownToStart();};
 
   function introCountDownToStart() {
     popup.style.display = "block";
@@ -29,7 +28,7 @@ $(function(){
           popup.style.display = "none";
           $('.intropage-container').css("display", "none");
           $('.gamepage-container').css("display", "block");
-          gameStarted = true;
+          gameState = GameState.ONTUTORIAL;
           playGame();
         }
     }, 1000);
@@ -127,9 +126,14 @@ $(function(){
   }
 
   function pauseGame(){
-    gameState = GameState.PAUSED;
+    // gameState = GameState.PAUSED; // for now!!!
+    gameState = GameState.NOTINGAME;
     let reminder = document.querySelector('.pause-reminder');
     reminder.style.display = "block";
+
+    // for now!!!!
+    clearInterval(interval1);
+    clearInterval(interval2);
 
      const readtime = 10;
      let count = readtime;
@@ -153,8 +157,7 @@ $(function(){
   }
 
   function endGame(){
-     gameState = GameState.INACTIVE;
-     gameStarted = false;
+     gameState = GameState.NOTINGAME;
      clearInterval(interval1);
      clearInterval(interval2);
 
@@ -183,7 +186,7 @@ $(function(){
   }
 
   function reminderOfLevelUp(){
-     gameState = GameState.PAUSED;
+     gameState = GameState.ONMESSAGE; // double check!
      let reminder = document.querySelector('.levelup-reminder');
      reminder.style.display = "block";
 
@@ -334,7 +337,7 @@ $(function(){
       frames.socket.onmessage = function (event) {
         let processedData = frames.ProcessFrameData(JSON.parse(event.data)); // this function also takes care of state machine transition
         if (processedData !== null) { // time for classification of data type
-          if (gameStarted && gameState === GameState.RUNNING) {
+          if (gameState === GameState.RUNNING) {
           // if (gameState == GameState.RUNNING) {
             // If a game session is running already, we know the data given will be that of a single goalie/player :D
             // So simply triggering position update functions for the current goalie
@@ -398,7 +401,7 @@ $(function(){
         //   gameState = GameState.PAUSED;
         //   pauseGame();
         // }
-        if (gameStarted && gameState === GameState.RUNNING) { // if the game is alraedy running and no one is in scene, then we pause the game
+        if (gameState === GameState.RUNNING) { // if the game is alraedy running and no one is in scene, then we pause the game
           pauseGame(); // uncomment me please!
         }
         // Case 1
@@ -420,7 +423,7 @@ $(function(){
       let bodyIDs = frames.RetrieveBodyIDs(frame); // now bodyIDs are retrieved with respect to the input people array indexing
       console.log(bodyIDs);
 
-      if (gameStarted && gameState === GameState.RUNNING) { // if game is already running, we only care about the data of our player of focus
+      if (gameState === GameState.RUNNING) { // if game is already running, we only care about the data of our player of focus
         for (let bodyIndex = 0; bodyIndex < bodyIDs.length; bodyIndex++) {
           let bodyID = bodyIDs[bodyIndex];
           // console.log(bodyID);
@@ -438,7 +441,7 @@ $(function(){
         pauseGame(); // uncomment me please
         return null;
       }
-      else if (!gameStarted && gameState === GameState.ONTUTORIAL){ // check for ANYONE that picks a choice; this is a per-user process
+      else if (gameState === GameState.NOTINGAME){ // check for ANYONE that picks a choice; this is a per-user process
         console.log("GAME should start");
         // idea:
         // User hovers right hand over certain region, check for collision for certain number of seconds. First come first serve, ranked by Z depth.
@@ -470,7 +473,7 @@ $(function(){
         }
         // TODO: ...
       }
-      else if (gameState == GameState.INACTIVE) { // game not running yet, check all present body's data for potential game starter
+      else if (gameState == GameState.PAUSED) { // game not running yet, check all present body's data for potential game starter
 
       }
       else if (gameState == GameState.ONMESSAGE) { // game is displaying some message, user has no control currently, so don't process any data
