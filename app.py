@@ -8,21 +8,20 @@ app = Flask(__name__, template_folder='.')
 #-----------------------------------------------------------------------
 
 @app.route('/', methods=['GET'])
-@app.route('/intro', methods=['GET'])
 def index():
 
-    html = render_template('templates/intro.html')
+    html = render_template('templates/introAndGame.html')
     response = make_response(html)
     return response
 
 #-----------------------------------------------------------------------
 
-@app.route('/game', methods=['GET'])
-def game():
+# @app.route('/game', methods=['GET'])
+# def game():
 
-    html = render_template('templates/game.html')
-    response = make_response(html)
-    return response
+#     html = render_template('templates/game.html')
+#     response = make_response(html)
+#     return response
 
 #-----------------------------------------------------------------------
 
