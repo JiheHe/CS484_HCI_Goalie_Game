@@ -16,6 +16,7 @@ $(function(){
   // popupBtn.onclick = function(){introCountDownToStart();};
 
   function introCountDownToStart() {
+    gameState = GameState.ONMESSAGE;
     popup.style.display = "block";
     const readytime = 5;
     let count = readytime;
@@ -44,7 +45,7 @@ $(function(){
      let tutorialinterval = setInterval(function() {
         count--;
         document.querySelector('.tutorial-header').innerHTML = "Tutorial";
-        document.querySelector('.tutorial-instruction').innerHTML = "Try to use your upper body to block the ball!";
+        document.querySelector('.tutorial-instruction').innerHTML = "Try to use your upper body to block the ball! If you wanna leave the game, just leave the screen :)";
         document.querySelector('.tutorial-timer').innerHTML = count + " s";
         if (count <= 0) {
             clearInterval(tutorialinterval);
@@ -65,7 +66,7 @@ $(function(){
     // });
 
     interval1 = setInterval(function(){
-      console.log("reached interval 1 -- gameState: " + gameState);
+      // console.log("reached interval 1 -- gameState: " + gameState);
       if (gameState === GameState.RUNNING){
         $('.curtime').text(timer--);
         if (timer == 0){
@@ -106,10 +107,10 @@ $(function(){
               editScore();
               $('.football').css("visibility", "hidden");
   
-          }, 5000); // originally: 1700
+          }, 1700); // originally: 1700
       } 
   
-    }, 6300); // originally, 3000
+    }, 3000); // originally, 3000
   }
 
   function footballShot() {
@@ -228,7 +229,6 @@ $(function(){
   function getRandomXandY(max, min) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
-
   
   /* ------------- for the interaction with Display ------------- */
   function updateGoaliePosition(goalieBodyPart, partPosition, partOffset, partRotation = null) {
@@ -281,7 +281,7 @@ $(function(){
 
   function getElementSize(elementId) {
     const element = document.getElementById(elementId);
-    console.log(element);
+    // console.log(element);
     const width = element.offsetWidth;
     const height = element.offsetHeight;
   
@@ -315,7 +315,7 @@ $(function(){
   var host = "cpsc484-04.yale.internal:8888" // to connect to the real time display data at hillhouse
   $(document).ready(function() {
     frames.start();
-    console.log("I'm executed" + (new Date()).getSeconds()); // TODO: delete later
+    // console.log("I'm executed" + (new Date()).getSeconds()); // TODO: delete later
     // twod.start();
   });
 
@@ -324,6 +324,10 @@ $(function(){
   let canvasWidth;
   let canvasHeight;
   let inSessionPlayerID = 12; // the id of the player in session, our targetID of focus. Just a test value. TODO.
+
+  const confirmationWaitTime = 3;
+  let timeAnchor = -1;
+  let confirmerID = -1;
 
   var frames = {
     socket: null,
@@ -406,6 +410,8 @@ $(function(){
         if (gameState === GameState.RUNNING) { // if the game is alraedy running and no one is in scene, then we pause the game
           pauseGame(); // uncomment me please!
         }
+        confirmerID = -1; // no confirmer anyway
+        document.getElementById("mockdata").style.opacity = 1;
         // Case 1
         return null; 
       }
@@ -423,7 +429,7 @@ $(function(){
                        --- Resume the Game
       */
       let bodyIDs = frames.RetrieveBodyIDs(frame); // now bodyIDs are retrieved with respect to the input people array indexing
-      console.log(bodyIDs);
+      // console.log(bodyIDs);
 
       if (gameState === GameState.RUNNING) { // if game is already running, we only care about the data of our player of focus
         for (let bodyIndex = 0; bodyIndex < bodyIDs.length; bodyIndex++) {
@@ -444,7 +450,6 @@ $(function(){
         return null;
       }
       else if (gameState === GameState.NOTINGAME){ // check for ANYONE that picks a choice; this is a per-user process
-        console.log("GAME should start");
         // idea:
         // User hovers right hand over certain region, check for collision for certain number of seconds. First come first serve, ranked by Z depth.
         // update inSessionPlayerID to the choice selector if choose to continue
@@ -462,18 +467,42 @@ $(function(){
           }
         }
         // Update right hand data to it
-        updateGoaliePosition(".goalkeeperLeftHand", closestBodyData[0].goalieLeftHandCenterPosition, {x:0, y:0}, closestBodyData[0].goalieLeftHandCenterRotation)
-        // If goalie hand is in Option position, then start count down. First come first serve lock (i.e. first user that does this gets to retain ownership until leaving option)
-        // probably use a boolean above.
-        // quick start code below without considering timer and ownership yet
-        let rect1 = document.getElementById("mockdata").getBoundingClientRect(),
-            rect5 = document.querySelector(".goalkeeperLeftHand").getBoundingClientRect();
-        if (checkOverlap(rect1, rect5)){
-            // Set the current user in session to the closest person
-          inSessionPlayerID = closestBodyData[1];
-          introCountDownToStart();
+        if (closestBodyData != null && closestBodyData[0].goalieLeftHandCenterPosition != null) {
+          updateGoaliePosition(".goalkeeperLeftHand", closestBodyData[0].goalieLeftHandCenterPosition, {x:0, y:0}, closestBodyData[0].goalieLeftHandCenterRotation)
+          // If goalie hand is in Option position, then start count down. First come first serve lock (i.e. first user that does this gets to retain ownership until leaving option)
+          // probably use a boolean above.
+          // quick start code below without considering timer and ownership yet
+          let rect1 = document.getElementById("mockdata").getBoundingClientRect(),
+              rect5 = document.querySelector(".goalkeeperLeftHand").getBoundingClientRect();
+          if (checkOverlap(rect1, rect5)){ // assume there's people present rn
+            if (confirmerID < 0) { // if the confirmation timer hasn't start yet
+              // start!
+              confirmerID = closestBodyData[1];
+              timeAnchor = Date.now();
+            }
+            else { // confirmerID exists
+              if (confirmerID != closestBodyData[1]) { // change of person, but still in contact
+                confirmerID = closestBodyData[1];
+                // keep the timer running!
+              }
+              // now update the time so far
+              let timeElapsed = (Date.now() - timeAnchor) / 1000; // in seconds
+              let timeDiffNow = confirmationWaitTime - timeElapsed;
+              let transparencyPercentage = timeDiffNow / confirmationWaitTime;
+              document.getElementById("mockdata").style.opacity = transparencyPercentage;
+              if (timeDiffNow <= 0) { // go into the game!
+                // Set the current user in session to the closest person
+                inSessionPlayerID = confirmerID;
+                confirmerID = -1; // resets
+                introCountDownToStart();
+              }
+            }
+          }
+          else { // no overlap
+            confirmerID = -1; 
+            document.getElementById("mockdata").style.opacity = 1;
+          }
         }
-        // TODO: ...
       }
       else if (gameState == GameState.PAUSED) { // game not running yet, check all present body's data for potential game starter
 

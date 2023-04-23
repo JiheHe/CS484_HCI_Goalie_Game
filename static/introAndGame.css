@@ -5,7 +5,8 @@ body {
 .football {
     position: absolute;
     visibility: hidden;
-    transition: 1.5s linear;
+    transition: 0.7s linear;
+    z-index: 11;
   }
 
 .gamepage-container{
@@ -51,6 +52,7 @@ body {
   width: 5%;
   transition: transform 0.1s;
   transform-origin: center center;
+  z-index: 10;
 }
 
 .goalkeeperRightHand {
@@ -120,6 +122,7 @@ p{
    height: 80px;
    width: 30%;
    font-size: 14pt;
+   z-index: -10;
 }
 
 .popup {
