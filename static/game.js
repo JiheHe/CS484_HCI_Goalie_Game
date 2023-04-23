@@ -13,6 +13,8 @@ $(function(){
   let popup = document.querySelector('.popup');
   // let popupBtn = document.getElementById("mockdata");
 
+  let gameTimer = new Date();
+
   // popupBtn.onclick = function(){introCountDownToStart();};
 
   function introCountDownToStart() {
@@ -226,7 +228,6 @@ $(function(){
   function getRandomXandY(max, min) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
-
   
   /* ------------- for the interaction with Display ------------- */
   function updateGoaliePosition(goalieBodyPart, partPosition, partOffset, partRotation = null) {
@@ -323,6 +324,10 @@ $(function(){
   let canvasHeight;
   let inSessionPlayerID = 12; // the id of the player in session, our targetID of focus. Just a test value. TODO.
 
+  const confirmationWaitTime = 3;
+  let timeAnchor = -1;
+  let confirmerID = -1;
+
   var frames = {
     socket: null,
 
@@ -404,6 +409,7 @@ $(function(){
         if (gameState === GameState.RUNNING) { // if the game is alraedy running and no one is in scene, then we pause the game
           pauseGame(); // uncomment me please!
         }
+        confirmerID = -1; // no confirmer anyway
         // Case 1
         return null; 
       }
@@ -466,12 +472,31 @@ $(function(){
         // quick start code below without considering timer and ownership yet
         let rect1 = document.getElementById("mockdata").getBoundingClientRect(),
             rect5 = document.querySelector(".goalkeeperLeftHand").getBoundingClientRect();
-        if (checkOverlap(rect1, rect5)){
-            // Set the current user in session to the closest person
-          inSessionPlayerID = closestBodyData[1];
-          introCountDownToStart();
+        if (checkOverlap(rect1, rect5)){ // assume there's people present rn
+          if (confirmerID < 0) { // if the confirmation timer hasn't start yet
+            // start!
+            confirmerID = closestBodyData[1];
+            timeAnchor = gameTimer.getMilliseconds();
+          }
+          else { // confirmerID exists
+            if (confirmerID != closestBodyData[1]) { // change of person, but still in contact
+              confirmerID = closestBodyData[1];
+              // keep the timer running!
+            }
+            // now update the time so far
+            let timeElapsed = (gameTImer.getMilliseconds() - timeAnchor) / 1000; // in seconds
+            let timeDiffNow = confirmationWaitTime - timeElapsed;
+            if (timeDiffNow <= 0) { // go into the game!
+              // Set the current user in session to the closest person
+              inSessionPlayerID = confirmerID;
+              confirmerID = -1; // resets
+              introCountDownToStart();
+            }
+          }
         }
-        // TODO: ...
+        else { // no overlap
+          confirmerID = -1; 
+        }
       }
       else if (gameState == GameState.PAUSED) { // game not running yet, check all present body's data for potential game starter
 
