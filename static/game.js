@@ -4,30 +4,32 @@ $(function(){
     RUNNING: 1, // a game session is ongoing
     PAUSED: 2, // a game session is paused
     ONMESSAGE: 3, // (unnecessary?) a game session is showing some message
-    INACTIVE: 4 // (unnecessary?) a game session hasn't started
+    NOTINGAME: 4 // a game session hasn't started
   };
   let ballcount = 0, score = 0, timer = 60; // to-be changed to 60 or 40 or 30, or 5(for testing)
-  let gameState = GameState.ONTUTORIAL;
-  let gameStarted = false;
+  let gameState = GameState.NOTINGAME;
   let request = null;
 
   let popup = document.querySelector('.popup');
-  let popupBtn = document.getElementById("mockdata");
+  // let popupBtn = document.getElementById("mockdata");
 
-  popupBtn.onclick = function() {
+  // popupBtn.onclick = function(){introCountDownToStart();};
+
+  function introCountDownToStart() {
+    gameState = GameState.ONMESSAGE;
     popup.style.display = "block";
     const readytime = 5;
     let count = readytime;
-    let curinterval = setInterval(function() {
+    let introinterval = setInterval(function() {
         count--;
         document.querySelector('.timer-instruction').innerHTML = "Game starts in";
         document.querySelector('.timer').innerHTML = count + " s";
         if (count <= 0) {
-          clearInterval(curinterval);
+          clearInterval(introinterval);
           popup.style.display = "none";
           $('.intropage-container').css("display", "none");
           $('.gamepage-container').css("display", "block");
-          gameStarted = true;
+          gameState = GameState.ONTUTORIAL;
           playGame();
         }
     }, 1000);
@@ -40,13 +42,13 @@ $(function(){
 
      const readtime = 5;
      let count = readtime;
-     let curinterval = setInterval(function() {
+     let tutorialinterval = setInterval(function() {
         count--;
         document.querySelector('.tutorial-header').innerHTML = "Tutorial";
-        document.querySelector('.tutorial-instruction').innerHTML = "Try to use your upper body to block the ball!";
+        document.querySelector('.tutorial-instruction').innerHTML = "Try to use your upper body to block the ball! If you wanna leave the game, just leave the screen :)";
         document.querySelector('.tutorial-timer').innerHTML = count + " s";
         if (count <= 0) {
-            clearInterval(curinterval);
+            clearInterval(tutorialinterval);
             reminder.style.display = "none";
             gameState = GameState.RUNNING;
         }
@@ -64,6 +66,7 @@ $(function(){
     // });
 
     interval1 = setInterval(function(){
+      // console.log("reached interval 1 -- gameState: " + gameState);
       if (gameState === GameState.RUNNING){
         $('.curtime').text(timer--);
         if (timer == 0){
@@ -104,10 +107,10 @@ $(function(){
               editScore();
               $('.football').css("visibility", "hidden");
   
-          }, 5000); // originally: 1700
+          }, 1700); // originally: 1700
       } 
   
-    }, 6300); // originally, 3000
+    }, 3000); // originally, 3000
   }
 
   function footballShot() {
@@ -125,18 +128,23 @@ $(function(){
   }
 
   function pauseGame(){
-    gameState = GameState.PAUSED;
+    // gameState = GameState.PAUSED; // for now!!!
+    gameState = GameState.NOTINGAME;
     let reminder = document.querySelector('.pause-reminder');
     reminder.style.display = "block";
 
+    // for now!!!!
+    clearInterval(interval1);
+    clearInterval(interval2);
+
      const readtime = 10;
      let count = readtime;
-     let curinterval = setInterval(function() {
+     let pauseinterval = setInterval(function() {
         count--;
         document.querySelector('.pause-instruction').innerHTML = "Seems that you left the game! It will automatically end in";
         document.querySelector('.pause-timer').innerHTML = count + " s";
         if (count <= 0) {
-            clearInterval(curinterval);
+            clearInterval(pauseinterval);
             reminder.style.display = "none";
             let url = '/';
             if (request != null)
@@ -146,13 +154,13 @@ $(function(){
                 url: url
             });
             window.location.replace(url);
+            location.reload();
         }
      }, 1000);
   }
 
   function endGame(){
-     gameState = GameState.INACTIVE;
-     gameStarted = false;
+     gameState = GameState.NOTINGAME;
      clearInterval(interval1);
      clearInterval(interval2);
 
@@ -161,12 +169,12 @@ $(function(){
 
      const readtime = 5;
      let count = readtime;
-     let curinterval = setInterval(function() {
+     let endinterval = setInterval(function() {
         count--;
         document.querySelector('.timeup-instruction').innerHTML = "Time's up! Let's go check your performance :D";
         document.querySelector('.timeup-timer').innerHTML = count + " s";
         if (count <= 0) {
-            clearInterval(curinterval);
+            clearInterval(endinterval);
             reminder.style.display = "none";
             let url = '/leaderboard?score=' + score;
             if (request != null)
@@ -181,18 +189,18 @@ $(function(){
   }
 
   function reminderOfLevelUp(){
-     gameState = GameState.PAUSED;
+     gameState = GameState.ONMESSAGE; // double check!
      let reminder = document.querySelector('.levelup-reminder');
      reminder.style.display = "block";
 
      const readtime = 5;
      let count = readtime;
-     let curinterval = setInterval(function() {
+     let levelupinterval = setInterval(function() {
         count--;
         document.querySelector('.levelup-instruction').innerHTML = "You brilliantly saved 5 balls. <br/> Now let's try faster balls!";
         document.querySelector('.levelup-timer').innerHTML = count + " s";
         if (count <= 0) {
-            clearInterval(curinterval);
+            clearInterval(levelupinterval);
             reminder.style.display = "none";
             $('.football').css("transition", "0.5s");
             gameState = GameState.RUNNING;
@@ -221,7 +229,6 @@ $(function(){
   function getRandomXandY(max, min) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
-
   
   /* ------------- for the interaction with Display ------------- */
   function updateGoaliePosition(goalieBodyPart, partPosition, partOffset, partRotation = null) {
@@ -274,7 +281,7 @@ $(function(){
 
   function getElementSize(elementId) {
     const element = document.getElementById(elementId);
-    console.log(element);
+    // console.log(element);
     const width = element.offsetWidth;
     const height = element.offsetHeight;
   
@@ -308,7 +315,7 @@ $(function(){
   var host = "cpsc484-04.yale.internal:8888" // to connect to the real time display data at hillhouse
   $(document).ready(function() {
     frames.start();
-    console.log("I'm executed" + (new Date()).getSeconds()); // TODO: delete later
+    // console.log("I'm executed" + (new Date()).getSeconds()); // TODO: delete later
     // twod.start();
   });
 
@@ -316,7 +323,11 @@ $(function(){
   const verticalFOV = 120 * (Math.PI / 180); // Convert to radians
   let canvasWidth;
   let canvasHeight;
-  let inSessionPlayerID = 604; // the id of the player in session, our targetID of focus. Just a test value. TODO.
+  let inSessionPlayerID = 12; // the id of the player in session, our targetID of focus. Just a test value. TODO.
+
+  const confirmationWaitTime = 3;
+  let timeAnchor = -1;
+  let confirmerID = -1;
 
   var frames = {
     socket: null,
@@ -332,7 +343,7 @@ $(function(){
       frames.socket.onmessage = function (event) {
         let processedData = frames.ProcessFrameData(JSON.parse(event.data)); // this function also takes care of state machine transition
         if (processedData !== null) { // time for classification of data type
-          if (gameStarted && gameState === GameState.RUNNING) {
+          if (gameState === GameState.RUNNING) {
           // if (gameState == GameState.RUNNING) {
             // If a game session is running already, we know the data given will be that of a single goalie/player :D
             // So simply triggering position update functions for the current goalie
@@ -396,9 +407,11 @@ $(function(){
         //   gameState = GameState.PAUSED;
         //   pauseGame();
         // }
-        if (gameStarted && gameState === GameState.RUNNING) { // if the game is alraedy running and no one is in scene, then we pause the game
+        if (gameState === GameState.RUNNING) { // if the game is alraedy running and no one is in scene, then we pause the game
           pauseGame(); // uncomment me please!
         }
+        confirmerID = -1; // no confirmer anyway
+        document.getElementById("mockdata").style.opacity = 1;
         // Case 1
         return null; 
       }
@@ -416,9 +429,9 @@ $(function(){
                        --- Resume the Game
       */
       let bodyIDs = frames.RetrieveBodyIDs(frame); // now bodyIDs are retrieved with respect to the input people array indexing
-      console.log(bodyIDs);
+      // console.log(bodyIDs);
 
-      if (gameStarted && gameState === GameState.RUNNING) { // if game is already running, we only care about the data of our player of focus
+      if (gameState === GameState.RUNNING) { // if game is already running, we only care about the data of our player of focus
         for (let bodyIndex = 0; bodyIndex < bodyIDs.length; bodyIndex++) {
           let bodyID = bodyIDs[bodyIndex];
           // console.log(bodyID);
@@ -436,9 +449,7 @@ $(function(){
         pauseGame(); // uncomment me please
         return null;
       }
-      else if (gameState == GameState.PAUSED) { // check for ANYONE that picks a choice; this is a per-user process
-        /*
-        console.log("GAME IS PAUSED");
+      else if (gameState === GameState.NOTINGAME){ // check for ANYONE that picks a choice; this is a per-user process
         // idea:
         // User hovers right hand over certain region, check for collision for certain number of seconds. First come first serve, ranked by Z depth.
         // update inSessionPlayerID to the choice selector if choose to continue
@@ -455,16 +466,45 @@ $(function(){
             }
           }
         }
-        // Set the current user in session to the closest person
-        // inSessionPlayerID = closestBodyData[1];
         // Update right hand data to it
-        updateGoaliePosition(".goalkeeperLeftHand", closestBodyData[0].goalieLeftHandCenterPosition, {x:0, y:0}, closestBodyData[0].goalieLeftHandCenterRotation)
-        // If goalie hand is in Option position, then start count down. First come first serve lock (i.e. first user that does this gets to retain ownership until leaving option)
-        // probably use a boolean above.
-        // TODO: ...
-        */
+        if (closestBodyData != null && closestBodyData[0].goalieLeftHandCenterPosition != null) {
+          updateGoaliePosition(".goalkeeperLeftHand", closestBodyData[0].goalieLeftHandCenterPosition, {x:0, y:0}, closestBodyData[0].goalieLeftHandCenterRotation)
+          // If goalie hand is in Option position, then start count down. First come first serve lock (i.e. first user that does this gets to retain ownership until leaving option)
+          // probably use a boolean above.
+          // quick start code below without considering timer and ownership yet
+          let rect1 = document.getElementById("mockdata").getBoundingClientRect(),
+              rect5 = document.querySelector(".goalkeeperLeftHand").getBoundingClientRect();
+          if (checkOverlap(rect1, rect5)){ // assume there's people present rn
+            if (confirmerID < 0) { // if the confirmation timer hasn't start yet
+              // start!
+              confirmerID = closestBodyData[1];
+              timeAnchor = Date.now();
+            }
+            else { // confirmerID exists
+              if (confirmerID != closestBodyData[1]) { // change of person, but still in contact
+                confirmerID = closestBodyData[1];
+                // keep the timer running!
+              }
+              // now update the time so far
+              let timeElapsed = (Date.now() - timeAnchor) / 1000; // in seconds
+              let timeDiffNow = confirmationWaitTime - timeElapsed;
+              let transparencyPercentage = timeDiffNow / confirmationWaitTime;
+              document.getElementById("mockdata").style.opacity = transparencyPercentage;
+              if (timeDiffNow <= 0) { // go into the game!
+                // Set the current user in session to the closest person
+                inSessionPlayerID = confirmerID;
+                confirmerID = -1; // resets
+                introCountDownToStart();
+              }
+            }
+          }
+          else { // no overlap
+            confirmerID = -1; 
+            document.getElementById("mockdata").style.opacity = 1;
+          }
+        }
       }
-      else if (gameState == GameState.INACTIVE) { // game not running yet, check all present body's data for potential game starter
+      else if (gameState == GameState.PAUSED) { // game not running yet, check all present body's data for potential game starter
 
       }
       else if (gameState == GameState.ONMESSAGE) { // game is displaying some message, user has no control currently, so don't process any data

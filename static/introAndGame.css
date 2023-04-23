@@ -6,6 +6,7 @@ body {
     position: absolute;
     visibility: hidden;
     transition: 0.7s linear;
+    z-index: 11;
   }
 
 .gamepage-container{
@@ -29,7 +30,6 @@ body {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  /* background-color: gray; */
   /* Set percentage-based width and height for flexibility */
   width: 90%;
   height: 90%;
@@ -52,6 +52,7 @@ body {
   width: 5%;
   transition: transform 0.1s;
   transform-origin: center center;
+  z-index: 10;
 }
 
 .goalkeeperRightHand {
@@ -121,6 +122,7 @@ p{
    height: 80px;
    width: 30%;
    font-size: 14pt;
+   z-index: -10;
 }
 
 .popup {
