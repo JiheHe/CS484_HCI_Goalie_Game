@@ -19,12 +19,12 @@ $(function(){
     popup.style.display = "block";
     const readytime = 5;
     let count = readytime;
-    let curinterval = setInterval(function() {
+    let introinterval = setInterval(function() {
         count--;
         document.querySelector('.timer-instruction').innerHTML = "Game starts in";
         document.querySelector('.timer').innerHTML = count + " s";
         if (count <= 0) {
-          clearInterval(curinterval);
+          clearInterval(introinterval);
           popup.style.display = "none";
           $('.intropage-container').css("display", "none");
           $('.gamepage-container').css("display", "block");
@@ -41,13 +41,13 @@ $(function(){
 
      const readtime = 5;
      let count = readtime;
-     let curinterval = setInterval(function() {
+     let tutorialinterval = setInterval(function() {
         count--;
         document.querySelector('.tutorial-header').innerHTML = "Tutorial";
         document.querySelector('.tutorial-instruction').innerHTML = "Try to use your upper body to block the ball!";
         document.querySelector('.tutorial-timer').innerHTML = count + " s";
         if (count <= 0) {
-            clearInterval(curinterval);
+            clearInterval(tutorialinterval);
             reminder.style.display = "none";
             gameState = GameState.RUNNING;
         }
@@ -65,6 +65,7 @@ $(function(){
     // });
 
     interval1 = setInterval(function(){
+      console.log("reached interval 1 -- gameState: " + gameState);
       if (gameState === GameState.RUNNING){
         $('.curtime').text(timer--);
         if (timer == 0){
@@ -137,12 +138,12 @@ $(function(){
 
      const readtime = 10;
      let count = readtime;
-     let curinterval = setInterval(function() {
+     let pauseinterval = setInterval(function() {
         count--;
         document.querySelector('.pause-instruction').innerHTML = "Seems that you left the game! It will automatically end in";
         document.querySelector('.pause-timer').innerHTML = count + " s";
         if (count <= 0) {
-            clearInterval(curinterval);
+            clearInterval(pauseinterval);
             reminder.style.display = "none";
             let url = '/';
             if (request != null)
@@ -152,6 +153,7 @@ $(function(){
                 url: url
             });
             window.location.replace(url);
+            location.reload();
         }
      }, 1000);
   }
@@ -166,12 +168,12 @@ $(function(){
 
      const readtime = 5;
      let count = readtime;
-     let curinterval = setInterval(function() {
+     let endinterval = setInterval(function() {
         count--;
         document.querySelector('.timeup-instruction').innerHTML = "Time's up! Let's go check your performance :D";
         document.querySelector('.timeup-timer').innerHTML = count + " s";
         if (count <= 0) {
-            clearInterval(curinterval);
+            clearInterval(endinterval);
             reminder.style.display = "none";
             let url = '/leaderboard?score=' + score;
             if (request != null)
@@ -192,12 +194,12 @@ $(function(){
 
      const readtime = 5;
      let count = readtime;
-     let curinterval = setInterval(function() {
+     let levelupinterval = setInterval(function() {
         count--;
         document.querySelector('.levelup-instruction').innerHTML = "You brilliantly saved 5 balls. <br/> Now let's try faster balls!";
         document.querySelector('.levelup-timer').innerHTML = count + " s";
         if (count <= 0) {
-            clearInterval(curinterval);
+            clearInterval(levelupinterval);
             reminder.style.display = "none";
             $('.football').css("transition", "0.5s");
             gameState = GameState.RUNNING;
