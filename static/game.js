@@ -6,7 +6,7 @@ $(function(){
     ONMESSAGE: 3, // (unnecessary?) a game session is showing some message
     NOTINGAME: 4 // a game session hasn't started
   };
-  let ballcount = 0, score = 0, timer = 60; // to-be changed to 60 or 40 or 30, or 5(for testing)
+  let ballcount = 0, score = 0; //, timer = 60; // to-be changed to 60 or 40 or 30, or 5(for testing)
   let gameState = GameState.NOTINGAME;
   let request = null;
 
@@ -68,6 +68,7 @@ $(function(){
 
     var timeLeft = 15;
     var current_time = document.getElementById('timer');
+    var current_level = document.getElementById('level');
 
     interval1 = setInterval(function(){
       // console.log("reached interval 1 -- gameState: " + gameState);
@@ -119,16 +120,26 @@ $(function(){
                     reminderOfLevelUp();
                 }
               } 
-              // if (checkOverlap(rect1, rect2)){
-              //   score += 1;
-              //   if (score == 5){
-              //       reminderOfLevelUp();
-              //   }
-              // } 
               editScore();
               $('.football').css("visibility", "hidden");
   
-          }, 1700); // originally: 1700
+              // Naheem's level
+              if (score < 5) {
+                  current_level.classList.add("level1");
+                  current_level.innerHTML = "Easy";
+                  // difficulty increased up there under reminderOfLeveUp()
+              } else {
+                  if (score < 10) {
+                      current_level.classList.add("level2");
+                      current_level.innerHTML = "Medium";
+                      // increase difficulty
+                  } else {
+                      current_level.classList.add("level3");
+                      current_level.innerHTML = "Hard";
+                      // increase difficulty
+                  }
+              }
+          }, 1700); 
       } 
   
     }, 3000); // originally, 3000
