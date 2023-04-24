@@ -11,9 +11,10 @@ $(function(){
   let request = null;
 
   let popup = document.querySelector('.popup');
-  // let popupBtn = document.getElementById("mockdata");
 
-  // popupBtn.onclick = function(){introCountDownToStart();};
+  // Test only; disable later
+  let popupBtn = document.getElementById("mockdata");
+  popupBtn.onclick = function(){introCountDownToStart();};
 
   function introCountDownToStart() {
     gameState = GameState.ONMESSAGE;

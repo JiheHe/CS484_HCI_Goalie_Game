@@ -10,7 +10,14 @@ body {
   }
 
 .gamepage-container{
-   display: none
+   display: none;
+   width: auto;
+   height: 47.5vw;  /* TODO: Tune on tuesday */
+   overflow: hidden;
+   margin-left: auto;
+   margin-right: auto;
+   margin-top: auto;
+   margin-bottom: auto;
 }
   
  .score-board{
@@ -151,4 +158,31 @@ p{
 .timer {
    font-size: 2rem;
    font-weight: bold;
+}
+
+.background-image {
+  /* Set the container's position property to "relative" */
+  position: relative;
+}
+
+.background-image::before {
+  content: "";
+
+  /* Set the background image */
+  background-image: url('main_screen.png');
+  
+  /* Set the position and size properties */
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  
+  /* Set the z-index to ensure the image is below the container's content */
+  z-index: -1;
+  
+  /* Optional: Adjust the background image properties as needed */
+  background-repeat: no-repeat;
+  /*background-position: center;*/
+  background-size: 100% 100%;
 }
