@@ -11,9 +11,9 @@ $(function(){
   let request = null;
 
   let popup = document.querySelector('.popup');
-  // let popupBtn = document.getElementById("mockdata");
+  let popupBtn = document.getElementById("mockdata");
 
-  // popupBtn.onclick = function(){introCountDownToStart();};
+  popupBtn.onclick = function(){introCountDownToStart();};
 
   function introCountDownToStart() {
     gameState = GameState.ONMESSAGE;
@@ -38,7 +38,7 @@ $(function(){
 
   function showTutorial(){
     let reminder = document.querySelector('.tutorial-reminder');
-    reminder.style.display = "block";
+    if (gameState === GameState.ONTUTORIAL) {reminder.style.display = "block"};
 
      const readtime = 5;
      let count = readtime;
@@ -137,7 +137,7 @@ $(function(){
     clearInterval(interval1);
     clearInterval(interval2);
 
-     const readtime = 10;
+     const readtime = 7;
      let count = readtime;
      let pauseinterval = setInterval(function() {
         count--;
