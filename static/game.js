@@ -66,12 +66,32 @@ $(function(){
     //   });
     // });
 
+    var timeLeft = 15;
+    var current_time = document.getElementById('timer');
+
     interval1 = setInterval(function(){
       // console.log("reached interval 1 -- gameState: " + gameState);
+      if (gameState === GameState.ONTUTORIAL) {
+        current_time.innerHTML = '00:' + timeLeft;
+      }
       if (gameState === GameState.RUNNING){
-        $('.curtime').text(timer--);
+        /*$('.curtime').text(timer--);
         if (timer == 0){
             endGame();
+        }*/
+        if (timeLeft == -1) { // Naheem's timer integrated
+          clearTimeout(interval1);
+          current_time.innerHTML = "TIME'S UP";
+          endGame();
+        } else {
+            if (timeLeft < 10) {
+                current_time.classList.add("timer2");
+                current_time.innerHTML = '00:0' + timeLeft;
+                timeLeft--;
+            } else {
+                 current_time.innerHTML = '00:' + timeLeft;
+                   timeLeft--;
+            }
         }
       }
     }, 1000);

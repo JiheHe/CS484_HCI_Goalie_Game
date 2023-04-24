@@ -37,7 +37,7 @@
     left: 670px;
 }
 
-#timer {
+#timer {     /* TUNE LATER */
     display: inline-block;
     position: absolute;
     width: 150px;
