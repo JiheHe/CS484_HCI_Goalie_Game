@@ -3,6 +3,7 @@
 <head>
    <link rel="stylesheet" href="static/introAndGame.css">
    <link href='https://fonts.googleapis.com/css?family=Bubblegum Sans' rel='stylesheet'>
+   <link rel="stylesheet" href="static/styles.css">
    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"></script>
    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
    <script src= "https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
@@ -30,23 +31,29 @@
       </div>
    </div>
 
-   <div class="gamepage-container">
-      <h1>Game Page</h1>
-      
+   <div class="gamepage-container background-image">
+      <!-- <img src="static/main_screen.png" alt="Goal" class="goal center" width= "100%" height="auto"> -->
+
+        <!-- Display the countdown timer in an element -->
+      <div id="timer"></div>
+        <!-- Display the current diffiulty in an element -->
+      <div id="level"></div>
+      <!-- Display the current score in an element -->
+      <div id="score"></div>
+
       <div class="score-board">
          <text>
             SAVED &emsp;<text class="score"></text>&emsp; CONCEDED
          </text>
       </div>
 
-      <div class="game-timer">
+      <!-- <div class="game-timer">
          <text>
             Timer <text class="curtime"></text>
          </text>
-      </div>
+      </div> -->
 
       <div class="game">
-         <!-- <img class="goalkeeper" src="static/color-goalkeeper.png"/> -->
          <img class="goalkeeperBody" src="static/soccer-shirt.png"/>
          <img class="goalkeeperHead" src="static/soccer-head.png"/>
          <img class="goalkeeperLeftHand" src="static/soccer-lefthand.png"/>
