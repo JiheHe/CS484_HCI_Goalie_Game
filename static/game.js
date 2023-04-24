@@ -126,18 +126,21 @@ $(function(){
               // Naheem's level
               if (score < 5) {
                   current_level.classList.add("level1");
-                  current_level.innerHTML = "Easy";
+                  current_level.innerHTML = "Basic";
                   // difficulty increased up there under reminderOfLeveUp()
               } else {
+                current_level.classList.add("level2");
+                current_level.innerHTML = "Intermediate";
+                /*
                   if (score < 10) {
                       current_level.classList.add("level2");
-                      current_level.innerHTML = "Medium";
+                      current_level.innerHTML = "Intermediate";
                       // increase difficulty
                   } else {
                       current_level.classList.add("level3");
                       current_level.innerHTML = "Hard";
                       // increase difficulty
-                  }
+                  }*/
               }
           }, 1700); 
       } 
