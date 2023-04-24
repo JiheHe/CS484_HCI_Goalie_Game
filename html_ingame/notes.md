@@ -73,3 +73,106 @@ var time_out = setInterval(() => {
     text-align: center;
     float:left; 
 }
+
+
+<div id="soccergoal">
+  <img src="soccergoal.jpg" alt="Goal" class="goal center">
+  <div id="timer">
+
+  </div>
+</div>
+
+
+<body>
+  <div id="container">
+    <div id="timer">
+      <div id="level">
+        <div id="score">
+          <img src="main_screen.png" alt="Goal" class="goal center">
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="ingamescreen.js"></script>
+</body>
+
+
+
+
+Start of old CSS
+
+.goal {
+    border: 10px solid #4D68ED;
+}
+
+
+.center {
+    position: relative;
+    display: block;
+    margin-top: relative;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+}
+#container {
+    width: 100px;
+    height: 100px;
+    position: relative;
+}
+
+
+#timer {
+    display: inline-block;
+    position: relative;
+    background-color: white;
+    width: 100px;
+    border: 15px solid #EDC94D;
+    padding: 5px;
+    left: 360px;
+    margin: 20px;
+    margin-top: 50px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+@font-face {
+    font-family: "LevelDesign";
+    src: local("LevelDesign"),
+      url("SedgwickAveDisplay-Regular.ttf") format("truetype");
+  }
+
+#level {
+    display: inline-block;
+    position: relative;
+    background-color: white;
+    width: 100px;
+    border: 5px solid #EDC94D;
+    padding: 10px;
+    left: 520px;
+    margin: 20px;
+    margin-top: 50px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    font-family: "LevelDesign", monospace;
+}
+
+
+#score {
+    display: inline-block;
+    position: relative;
+    background-color: white;
+    width: 100px;
+    border: 15px solid #EDC94D;
+    padding: 5px;
+    left: 670px;
+    margin: 20px;
+    margin-top: 50px;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+
+  

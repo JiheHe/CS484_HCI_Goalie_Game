@@ -1,56 +1,81 @@
+.goal {
+    border: 10px solid #4D68ED;
+}
+
 .center {
+    position: relative;
     display: block;
-    margin-top: relative;
+    top: 25px;
     margin-left: auto;
     margin-right: auto;
-    width: 50%;
-  }
+    width: 65%;
+    height: auto
+}
 
+#container {
+    width: 100px;
+    height: 100px;
+    position: relative;
+}
+
+.timer2 {
+    color: red;
+}
+
+.level1 {
+    color: black;
+    left: 667px;
+}
+
+.level2 {
+    color: blue;
+    left: 645px;
+}
+
+.level3 {
+    color: red;
+    left: 670px;
+}
 
 #timer {
     display: inline-block;
-    position: relative;
-    background-color: white;
-    width: 100px;
-    border: 15px solid #EDC94D;
-    padding: 10x;
-    left: 360px;
-    margin: 20px;
-    margin-top: 50px;
-    margin-left: auto;
-    margin-right: auto;
+    position: absolute;
+    width: 150px;
+    padding: 5px;
+    top: 57px;
+    left: 305px;
     text-align: center;
+    font-size: 30px;
 }
+
+@font-face {
+    font-family: "LevelDesign";
+    src: local("LevelDesign"),
+      url("SedgwickAveDisplay-Regular.ttf") format("truetype");
+}
+
 
 #level {
     display: inline-block;
-    position: relative;
-    background-color: white;
+    position: absolute;
     width: 100px;
-    border: 15px solid #EDC94D;
-    padding: 10x;
-    left: 520px;
-    margin: 20px;
-    margin-top: 50px;
-    margin-left: auto;
-    margin-right: auto;
+    padding: 5px;
+    top: 44px;
     text-align: center;
+    font-family: "LevelDesign", monospace;
+    font-size: 60px;
 }
 
 
 #score {
     display: inline-block;
-    position: relative;
-    background-color: white;
+    position: absolute;
     width: 100px;
-    border: 15px solid #EDC94D;
-    padding: 10x;
-    left: 670px;
-    margin: 20px;
-    margin-top: 50px;
-    margin-left: auto;
-    margin-right: auto;
+    padding: 5px;
+    top: 57px;
+    right: 325px;
     text-align: center;
+    font-size: 30px;
 }
 
 
