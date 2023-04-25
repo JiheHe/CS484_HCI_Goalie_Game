@@ -29,7 +29,7 @@
 
 .level2 {
     color: blue;
-    left: 590px;
+    left: 620px;
 }
 
 .level3 {
@@ -43,7 +43,7 @@
     width: 150px;
     padding: 5px;
     top: 17px;
-    left: 115px;
+    left: 121px;
     text-align: center;
     font-size: 30px;
 }
@@ -61,7 +61,7 @@
     width: 100px;
     padding: 5px;
     top: 3px;
-    left: 650px;
+    left: 680px;
     text-align: center;
     font-family: "LevelDesign", monospace;
     font-size: 60px;
@@ -71,8 +71,8 @@
 #score {
     display: inline-block;
     position: absolute;
-    top: 14px;
-    right: 82.5px;
+    top: 16px;
+    right: 90px;
     padding: 5px;
     text-align: center;
     font-size: 30px;
