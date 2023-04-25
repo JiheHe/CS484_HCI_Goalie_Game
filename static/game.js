@@ -58,15 +58,15 @@ $(function(){
 
   function playGame(){
     showTutorial();
-    // window.addEventListener("mousemove", (e) =>{
-    //   gsap.to(".goalkeeper", {
-    //       duration: 0.4,
-    //       // x: e.pageX - 750,
-    //       // y: e.pageY - 200,
-    //       x: e.pageX - 750,
-    //       y: e.pageY - 800,
-    //   });
-    // });
+    window.addEventListener("mousemove", (e) =>{
+      gsap.to(".goalkeeperBody", {
+          duration: 0.4,
+          // x: e.pageX - 750,
+          // y: e.pageY - 200,
+          x: e.pageX - 750,
+          y: e.pageY - 800,
+      });
+    });
 
     var timeLeft = 59;
     var current_time = document.getElementById('timer');
