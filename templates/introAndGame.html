@@ -18,10 +18,14 @@
       <h1 style="text-align: center;">Soccer Goalie Simulator</h1>
       <img class="goalkeeperLeftHand" src="static/left-hand.png"/>
       <div>
-         <input id="mockdata" type="submit" name="mock_jump_button" value="Hover hand here to begin!"/>
+         <input id="mockdata" type="submit" name="mock_jump_button" value="Hover hand here for 3 seconds to begin!"/>
          <!-- <p> Attractive Visuals</p> -->
          <img class="a" src="https://upload.wikimedia.org/wikipedia/commons/e/ec/Soccer_ball.svg">
+         <!-- <p> Instructions to start the game</p> -->
       </div>
+      <div class="intro1">This game is single player only </div>
+      <div class="intro2">If your right hand is closer to the screen than other people's, then you are taking control :D</div>
+      <div class="intro3">Move closer to the screen for higher control; move farther from screen for lower control. Feel free to tune your distance so you fit the goalie the best! </div>
       <div class="popup">
          <div class="popup-content">
          <div class="timer-instruction"></div>
@@ -32,32 +36,24 @@
 
    <div class="gamepage-container background-image">
       <!-- <img src="static/main_screen.png" alt="Goal" class="goal center" width= "100%" height="auto"> -->
-
+      <img class="goalkeeperBody" src="static/soccer-shirt.png"/>
+      <img class="goalkeeperHead" src="static/soccer-head.png"/>
+      <img class="goalkeeperLeftHand" src="static/left-hand.png"/>
+      <img class="goalkeeperRightHand" src="static/right-hand.png"/>
+      <!-- <img class="goalkeeper" src="static/color-goalkeeper.png"/> -->
+      <img class="football" src="static/soccer-ball.jpg"/>
+      
         <!-- Display the countdown timer in an element -->
       <div id="timer"></div>
         <!-- Display the current diffiulty in an element -->
-      <div id="level"></div>
+      <div id="level">Easy</div>
       <!-- Display the current score in an element -->
       <div id="score">
          <div class="score-board">
-            <text>
+            <text class="outsidescore">
                SAVED &emsp;<text class="score"></text>&emsp; CONCEDED
             </text>
          </div>
-      </div>
-
-      <!-- <div class="game-timer">
-         <text>
-            Timer <text class="curtime"></text>
-         </text>
-      </div> -->
-
-      <div class="game">
-         <img class="goalkeeperBody" src="static/soccer-shirt.png"/>
-         <img class="goalkeeperHead" src="static/soccer-head.png"/>
-         <img class="goalkeeperLeftHand" src="static/left-hand.png"/>
-         <img class="goalkeeperRightHand" src="static/right-hand.png"/>
-         <img class="football" src="static/soccer-ball.jpg"/>
       </div>
 
       <div class="tutorial-reminder">

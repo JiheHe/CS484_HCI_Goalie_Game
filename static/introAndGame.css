@@ -8,9 +8,14 @@
 }
 
 body {
-  font-family: 'Bubblegum Sans';font-size: 22px;
+  font-family: 'Bubblegum Sans';
+  font-size: 22px;
   background-color:#4CB748;
   text-align: center;
+}
+
+.tutorial-header{
+  font-size: 35px;
 }
 
 h1 {
@@ -45,7 +50,7 @@ p {
 .football {
     position: absolute;
     visibility: hidden;
-    transition: 0.7s linear;
+    transition: 2.0s;
     z-index: 11;
   }
 
@@ -61,14 +66,12 @@ p {
 }
   
  .score-board{
+   /* margin-right: 35%;
    margin-bottom: 20px;
-   background-color: palegreen;
+   width: 100%; */
+   top: 2.5%;
+   margin-left: 12%;
    width: 100%;
- }
- 
- .goalkeeper {
-   position: absolute;
-   width: 12%;
  }
 
  .interactive-range-boundingbox {
@@ -86,11 +89,14 @@ p {
  .goalkeeperBody {
   position: absolute;
   width: 15%;
+  padding-top: 20px;
+  /* z-index: 60; */
 }
 
 .goalkeeperHead {
   position: absolute;
   width: 4.5%;
+  /* z-index: 60; */
 }
 
 .goalkeeperLeftHand {
@@ -106,6 +112,13 @@ p {
   width: 5%;
   transition: transform 0.1s; /* tuning parameter: rate of data collection */
   transform-origin: center center;
+  z-index: 10;
+}
+
+.goalkeeper {
+  position: absolute;
+  width: 20%;
+  /* z-index: 60; */
 }
  
  text {
@@ -227,4 +240,5 @@ p {
   background-repeat: no-repeat;
   /*background-position: center;*/
   background-size: 100% 100%;
+  z-index: -1;
 }

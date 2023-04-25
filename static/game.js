@@ -41,12 +41,12 @@ $(function(){
     let reminder = document.querySelector('.tutorial-reminder');
     if (gameState === GameState.ONTUTORIAL) {reminder.style.display = "block"};
 
-     const readtime = 5;
+     const readtime = 7;
      let count = readtime;
      let tutorialinterval = setInterval(function() {
         count--;
-        document.querySelector('.tutorial-header').innerHTML = "Tutorial";
-        document.querySelector('.tutorial-instruction').innerHTML = "Try to use your upper body to block the ball! If you wanna leave the game, just leave the screen :)";
+        document.querySelector('.tutorial-header').innerHTML = "Try to use your upper body to block the ball!";
+        document.querySelector('.tutorial-instruction').innerHTML = "</br>Want to exit? Just move away from the screen :) " + "</br></br> Ensure the sensor isn't blocked! Don't leave now or the game will close. " + "</br> Sensor issues post-tutorial? Just retry :3";
         document.querySelector('.tutorial-timer').innerHTML = count + " s";
         if (count <= 0) {
             clearInterval(tutorialinterval);
@@ -57,23 +57,31 @@ $(function(){
   }
 
   function playGame(){
+    numFramesTillPause = 0;
+    yOffsetFactor = 4;
     showTutorial();
     // window.addEventListener("mousemove", (e) =>{
-    //   gsap.to(".goalkeeper", {
+    //   gsap.to(".goalkeeperBody", {
     //       duration: 0.4,
+    //       // x: e.pageX - 750,
+    //       // y: e.pageY - 200,
     //       x: e.pageX - 750,
-    //       y: e.pageY - 200,
+    //       y: e.pageY - 800,
     //   });
     // });
 
-    var timeLeft = 15;
+    var timeLeft = 59;
     var current_time = document.getElementById('timer');
     var current_level = document.getElementById('level');
 
     interval1 = setInterval(function(){
       // console.log("reached interval 1 -- gameState: " + gameState);
       if (gameState === GameState.ONTUTORIAL) {
-        current_time.innerHTML = '00:' + timeLeft;
+        if (timeLeft < 10){
+          current_time.innerHTML = '00 : 0' + timeLeft;
+        }else{
+          current_time.innerHTML = '00 : ' + timeLeft;
+        }
       }
       if (gameState === GameState.RUNNING){
         /*$('.curtime').text(timer--);
@@ -87,10 +95,10 @@ $(function(){
         } else {
             if (timeLeft < 10) {
                 current_time.classList.add("timer2");
-                current_time.innerHTML = '00:0' + timeLeft;
+                current_time.innerHTML = '00 : 0' + timeLeft;
                 timeLeft--;
             } else {
-                 current_time.innerHTML = '00:' + timeLeft;
+                 current_time.innerHTML = '00 : ' + timeLeft;
                    timeLeft--;
             }
         }
@@ -114,6 +122,7 @@ $(function(){
               rect3 = document.querySelector(".goalkeeperHead").getBoundingClientRect(),
               rect4 = document.querySelector(".goalkeeperRightHand").getBoundingClientRect(),
               rect5 = document.querySelector(".goalkeeperLeftHand").getBoundingClientRect();
+              // if (checkOverlap(rect1, rect2)){
               if (checkOverlaps(rect1, [rect2, rect3, rect4, rect5])){
                 score += 1;
                 if (score == 5){
@@ -142,29 +151,32 @@ $(function(){
                       // increase difficulty
                   }*/
               }
-          }, 1700); 
+          }, 3000); // originally 2600
       } 
   
-    }, 3000); // originally, 3000
+    }, 6000); // originally, 3000, 3800
   }
 
   function footballShot() {
     $('.football').css({
-        left:  getRandomXandY(100, 1000),
-        top: getRandomXandY(200, 400),
+        left:  getRandomXandY(200, 1400),
+        top: getRandomXandY(90, 450),
         transform: 'scale(1)'
     })
 
     setTimeout( function() {
         $('.football').css("visibility", "visible");
-    }, 700);
+    }, 1000);
 
     ballcount += 1;
   }
 
+  let numFramesTillPause = 0; // for fault tolerance, just in case sensor lags for a frame
+  const numFramesPlayerInvalid = 10;
   function pauseGame(){
     // gameState = GameState.PAUSED; // for now!!!
     gameState = GameState.NOTINGAME;
+    numFramesTillPause = 0;
     let reminder = document.querySelector('.pause-reminder');
     reminder.style.display = "block";
 
@@ -237,7 +249,7 @@ $(function(){
         if (count <= 0) {
             clearInterval(levelupinterval);
             reminder.style.display = "none";
-            $('.football').css("transition", "0.5s");
+            $('.football').css("transition", "1.2s");
             gameState = GameState.RUNNING;
         }
      }, 1000);
@@ -256,9 +268,10 @@ $(function(){
 
 
   function editScore(){
-    setTimeout( function() {
-      $('.score').text( score + " - " + (ballcount - score));
-    }, 800);
+    // setTimeout( function() {
+    //   $('.score').text( score + " - " + (ballcount - score));
+    // }, 800); // change to 1600??
+    $('.score').text( score + " - " + (ballcount - score));
   }
 
   function getRandomXandY(max, min) {
@@ -359,6 +372,7 @@ $(function(){
   let canvasWidth;
   let canvasHeight;
   let inSessionPlayerID = 12; // the id of the player in session, our targetID of focus. Just a test value. TODO.
+  let yOffsetFactor = 2.5;
 
   const confirmationWaitTime = 3;
   let timeAnchor = -1;
@@ -383,7 +397,7 @@ $(function(){
             // If a game session is running already, we know the data given will be that of a single goalie/player :D
             // So simply triggering position update functions for the current goalie
             var goaliePositionData = processedData;
-            updateGoaliePosition(".goalkeeperBody", goaliePositionData.goalieBodyCenterPosition, {x:0, y:0});   // won't be affected by device scaling
+            updateGoaliePosition(".goalkeeperBody", goaliePositionData.goalieBodyCenterPosition, {x:0, y:10});   // won't be affected by device scaling
             updateGoaliePosition(".goalkeeperHead", goaliePositionData.goalieHeadCenterPosition, {x:0, y:-5}); // can do this because will be relative to game space
             updateGoaliePosition(".goalkeeperLeftHand", goaliePositionData.goalieLeftHandCenterPosition, {x:0, y:0}, goaliePositionData.goalieLeftHandCenterRotation);
             updateGoaliePosition(".goalkeeperRightHand", goaliePositionData.goalieRightHandCenterPosition, {x:0, y:0}, goaliePositionData.goalieRightHandCenterRotation);
@@ -443,7 +457,12 @@ $(function(){
         //   pauseGame();
         // }
         if (gameState === GameState.RUNNING) { // if the game is alraedy running and no one is in scene, then we pause the game
-          pauseGame(); // uncomment me please!
+          if (numFramesTillPause >= numFramesPlayerInvalid) {
+            pauseGame(); // uncomment me please!
+          }
+          else {
+            numFramesTillPause++;
+          }
         }
         confirmerID = -1; // no confirmer anyway
         document.getElementById("mockdata").style.opacity = 1;
@@ -473,6 +492,7 @@ $(function(){
           if (bodyID === inSessionPlayerID) {
             // console.log("Target found. at index " + bodyIndex + ". Updating data");
             // Player in session still exists! We want this one player's data ONLY.
+            numFramesTillPause = 0;
             return frames.ProcessUpperbodyData(frame, bodyIndex);
           }
         }
@@ -481,7 +501,12 @@ $(function(){
         // So we'll safely ignore that case. :). Potential issue: 1s data latency...
         // This means that if inSessionPlayerID is not found among the list of present IDs, then the player has left the view. So we pause the game.
         // gameState = GameState.PAUSED; // this line is included in pauseGame()
-        pauseGame(); // uncomment me please
+        if (numFramesTillPause >= numFramesPlayerInvalid) {
+          pauseGame(); // uncomment me please!
+        }
+        else {
+          numFramesTillPause++;
+        }
         return null;
       }
       else if (gameState === GameState.NOTINGAME){ // check for ANYONE that picks a choice; this is a per-user process
@@ -493,8 +518,8 @@ $(function(){
         // Find the user with the closest z axis (smallest number);
         for (let bodyIndex = 0; bodyIndex < bodyIDs.length; bodyIndex++) {
           let bodyData = frames.ProcessUpperbodyData(frame, bodyIndex);
-          if (bodyData.goalieRightHandCenterPosition != null) { // someone's showing their right hand ;D
-            let rightHandZDepth = bodyData.goalieRightHandCenterPosition.z;
+          if (bodyData.goalieLeftHandCenterPosition != null) { // someone's showing their right hand ;D
+            let rightHandZDepth = bodyData.goalieLeftHandCenterPosition.z; // user right hand
             if (rightHandZDepth < smallestZDepth) {
               smallestZDepth = rightHandZDepth;
               closestBodyData = [ bodyData, bodyIDs[bodyIndex] ]; // stores calculated upperbody data and user id
@@ -573,7 +598,6 @@ $(function(){
       return frame.people[playerId].joints[jointId].confidence;
     },
 
-
     MapKinectPositionToCanvas(kinectPosition) {
       const userX = kinectPosition.x * -1; // *-1 because the x axis is flipped for kinect
       const userY = kinectPosition.y;
@@ -586,22 +610,10 @@ $(function(){
       const normalizedY = (userY + halfHeight) / (2 * halfHeight);
 
       const canvasX = normalizedX * canvasWidth - canvasWidth / 2; // we can map x 1 to 1, so center it ;D
-      const canvasY = normalizedY * canvasHeight - canvasHeight / 3 // not diving by 2 because we can't map y 1 to 1 due to display height diff; need some offsets. TUNABLE
+      const canvasY = normalizedY * canvasHeight - canvasHeight / yOffsetFactor; // was 3 // not diving by 2 because we can't map y 1 to 1 due to display height diff; need some offsets. TUNABLE
     
       return { x: canvasX, y: canvasY, z: userZ }; // X and Y normalized, Z not normalized
     },
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     // Converts user's upperbody data in Kinetic into the game space coord, as if he's a goalie

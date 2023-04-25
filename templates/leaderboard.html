@@ -7,16 +7,17 @@
 
 <body>
    <div>
-      <label class="label"> 
+      <label class="label">
          Back to home page in <text class="curtime"></text> s
       </label>
 
       <div class="game-over-container">
          <h1>Game Over</h1>
              <div class="score-circle">
-                 <p class="score">5</p>
+                 <text class="score">{{ score }}</text>
              </div>
-         <p class="comments"> Good job, you saved a lot! </p>
+         <p class="performance"> balls saved in 1 min!</p>
+         <p class="comments"> Great job, you saved a lot! </p>
          <img class="player-image" src="static/Boy_Kicking_Ball2.png"/>
      </div>
    </div>
@@ -25,6 +26,13 @@
    <script src= "https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
    <script>
+      let score = {{ score }};
+      if (score > 5) {
+         $('.comments').text("Great job, you saved a lot!");
+      } else {
+         $('.comments').text("Nice try, good luck next time!");
+      }
+
       $(function(){
          let timer = 10;
          interval = setInterval(function(){
