@@ -5,7 +5,7 @@ We have some dependicies that are necessary for our installation. In this zip fi
 run.sh, pipefile, pipfile.lock, web, and runserver.py files that will help you run this game. 
 In order to start, in a python compatible terminal, run these 4 lines consecutively: 
 (1) python3 -m venv flaskenv, 
-(2) . flaskenv/bin/activate, 
+(2) . flaskenv/bin/activate, or ./flaskenv/Scripts/activate for Windows
 (3) pip install flask, 
 (4) python3 runserver.py 11223. 
 
@@ -24,7 +24,8 @@ complete said objective in a given time limit. The objective of blocking soccer 
 achieved by the user moving their hands, chest, and face to the position of an incoming soccer 
 ball, achieving the first task of physical movement. We added a time limit of 1 minutes for this 
 game, as the installation tracks both blocked balls (under "Score") and missed balls 
-(under "Conceded"). 
+(under "Conceded"). If the user moves closer, then the goalie gets lower slightly; if the user moves
+farther, then the goalie gets higher slightly. This compensates user height difference in a way.
 
 
 # - Constraints -
@@ -33,17 +34,17 @@ intergrative development environment that is suitable to run python commands in 
 For certain machines, ensuring you are typing "python3" rather than just "python", is critical 
 for the code to work. 
 
-Some other constraints are:
+Some other constraints include:
 
 (1) The height of the display - the display to camera height is set to be too high that when 
 the user’s eyes are leveled with the screen, only half of the body can be seen. If the user 
 wants to see the full body, he has to move far back, which is too far for valid sensor reading 
 and visual indication. To compensate that, we made our game half-body movement only and limited 
 the user interaction space to a smaller bounding box instead of the whole screen. We also made our 
-interaction Z-axis independent so the user doesn’t have to consider depth differences and can pick 
-the best visible range for them.
+interaction Z-axis independent relatively so the user doesn’t have to consider depth differences 
+and can pick the best visible range for them.
 
-(2) The latency of the sensor reading: there is an about a one second delay between reading in 
+(2) The latency of the sensor reading: there is about an one second delay between reading in 
 the data and transmitting it through the server. So everything the user does will be behind by 1 
 second. Since our game is reaction based, we had to lower the difficulty and make the ball linger 
 in the area longer to account for such latency.
@@ -56,6 +57,14 @@ the edge of the sensor, the character moves to the edge of the game space. Regar
 scaled down the movement ratio so the user can stay relatively stable Y-axis wise as vertical movements 
 won’t matter much due to height difference too. We think the emphasis on horizontal movement provided 
 safety and flexibility in such a limited space.
+
+(4) Technical constraints: the sensor sometimes stops reading in user input for a frame or two randomly,
+and to avoid the frame data being interpreted as "user has left the scene," we added a variable numFramesTillPause
+to track for the number of frames that the player isn't present in. If that accumulates above the threshold, then
+the game pauses/ends. It's a measure of fault tolerance because ideally the threshold won't be triggered 
+if the user still stays in place. Actually I just realized this method doesn't work because kinect cannot track
+user id so it will just assign the user another id which probably doesn't match the previous id and the game
+still exits anyway... nevermind... It was an attempt nonetheless. Kinect ID reassignment blocks out lots of features...
 
 
 # - Collaboration Record -
@@ -80,6 +89,12 @@ Contribution:
 
 Student Name and NetID: Jihe He (jh2972)
 Contribution: 
+I worked on data parsing and normalization to transform from user space data read in by the frame into the
+game html space data, especially the positions and orientations and other metadatas. I also contributed
+to the game structure design, including state machine, logic checks, etc. I also worked on adding some
+html and css elements for the game. For both game scene and intro scene, I worked closely with Annika
+at first for game system implementation and the rest of the group later on for visualization implementation
+and proper tuning. Everyone's work came together nicely at the end. I also did my assigned parts in README.
 
 
 Student Name and NetID: Naheem Watson (nrw27)
