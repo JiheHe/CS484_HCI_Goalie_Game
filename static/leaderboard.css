@@ -1,44 +1,73 @@
-.result_h1{
+/* .result_h1{
    font-size: 100px;
    margin-bottom: 20px;
    color:  #4CB748;
- }
+ } */
  
- .game-over-container {
+ /* .game-over-container {
    display: flex;
    flex-direction: column;
    align-items: center;
    justify-content: center;
-   height: 100%;
+ } */
+
+ .label{
+  font-family: 'Bubblegum Sans';
+  font-size: 23px;
+  color: #489c45;
+  font-weight: bold;
  }
+
+  .game-over-container {
+    font-family: 'Bubblegum Sans';
+    padding-top: 10px;
+    text-align: center;
+    border-radius: 50%;
+    /* border: 30px solid #fff7d1;
+    background-color:#e5f9e3; */
+    /* border: 30px solid #e5f9e3; */
+    background-color:#4CB748; 
+    margin-left: 10%;
+    width: 80%;
+    height: 70%;
+  }
+
+  h1 {
+    font-size: 50px;
+  }
  
  .score-circle {
-   width: 150px;
-   height: 150px;
+   width: 90px;
+   height: 90px;
+   margin-left: 46%;
    border-radius: 50%;
-   background-color: #4CB748;
+   background-color: white;
    display: flex;
    align-items: center;
    justify-content: center;
-   margin-top: 25px;
+   margin-top: 15px;
  }
  
  .score {
-   font-size: 100px;
-   color: white;
+   font-size: 80px;
+   /* color: white; */
  }
  
  .player-image {
    width: 250px;
    height: 250px;
-   margin-top: 50px;
+   margin-top: 20px;
  }
  
  .comments {
-   color: #4CB748;
+   /* color: #4CB748; */
+   color: white;
    font-size: 50px;
  }
 
+ .performance {
+  font-size: 30px;
+ }
  
 
 /* h1, div {

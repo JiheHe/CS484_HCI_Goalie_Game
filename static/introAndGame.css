@@ -4,10 +4,12 @@
   margin-left: auto;
   margin-right: auto;
   width: 20%;
+  margin-top: 20px;
 }
 
 body {
-  font-family: 'Bubblegum Sans';font-size: 22px;
+  font-family: 'Bubblegum Sans';
+  font-size: 22px;
   background-color:#4CB748;
   text-align: center;
 }
@@ -44,7 +46,7 @@ p {
 .football {
     position: absolute;
     visibility: hidden;
-    transition: 0.7s linear;
+    transition: 2.0s;
     z-index: 11;
   }
 
@@ -68,10 +70,6 @@ p {
    width: 100%;
  }
  
- .goalkeeper {
-   position: absolute;
-   width: 12%;
- }
 
  .interactive-range-boundingbox {
   position: absolute;
@@ -108,6 +106,12 @@ p {
   width: 5%;
   transition: transform 0.1s; /* tuning parameter: rate of data collection */
   transform-origin: center center;
+}
+
+.goalkeeper {
+  position: absolute;
+  width: 20%;
+  z-index: 10;
 }
  
  text {
@@ -171,6 +175,9 @@ p {
    width: 30%;
    font-size: 14pt;
    z-index: -10;
+   border-radius: 20px;
+   font-family: 'Bubblegum Sans'; font-size: 22px;
+   color: #4CB748;
 }
 
 .popup {

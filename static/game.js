@@ -61,8 +61,10 @@ $(function(){
     // window.addEventListener("mousemove", (e) =>{
     //   gsap.to(".goalkeeper", {
     //       duration: 0.4,
+    //       // x: e.pageX - 750,
+    //       // y: e.pageY - 200,
     //       x: e.pageX - 750,
-    //       y: e.pageY - 200,
+    //       y: e.pageY - 800,
     //   });
     // });
 
@@ -114,6 +116,7 @@ $(function(){
               rect3 = document.querySelector(".goalkeeperHead").getBoundingClientRect(),
               rect4 = document.querySelector(".goalkeeperRightHand").getBoundingClientRect(),
               rect5 = document.querySelector(".goalkeeperLeftHand").getBoundingClientRect();
+              // if (checkOverlap(rect1, rect2)){
               if (checkOverlaps(rect1, [rect2, rect3, rect4, rect5])){
                 score += 1;
                 if (score == 5){
@@ -139,10 +142,10 @@ $(function(){
                       // increase difficulty
                   }
               }
-          }, 1700); 
+          }, 3000); // originally 2600
       } 
   
-    }, 3000); // originally, 3000
+    }, 6000); // originally, 3000, 3800
   }
 
   function footballShot() {
@@ -154,7 +157,7 @@ $(function(){
 
     setTimeout( function() {
         $('.football').css("visibility", "visible");
-    }, 700);
+    }, 1000);
 
     ballcount += 1;
   }
@@ -234,7 +237,7 @@ $(function(){
         if (count <= 0) {
             clearInterval(levelupinterval);
             reminder.style.display = "none";
-            $('.football').css("transition", "0.5s");
+            $('.football').css("transition", "1.2s");
             gameState = GameState.RUNNING;
         }
      }, 1000);
@@ -253,9 +256,10 @@ $(function(){
 
 
   function editScore(){
-    setTimeout( function() {
-      $('.score').text( score + " - " + (ballcount - score));
-    }, 800);
+    // setTimeout( function() {
+    //   $('.score').text( score + " - " + (ballcount - score));
+    // }, 800); // change to 1600??
+    $('.score').text( score + " - " + (ballcount - score));
   }
 
   function getRandomXandY(max, min) {
@@ -587,18 +591,6 @@ $(function(){
     
       return { x: canvasX, y: canvasY, z: userZ }; // X and Y normalized, Z not normalized
     },
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     // Converts user's upperbody data in Kinetic into the game space coord, as if he's a goalie

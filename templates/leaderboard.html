@@ -2,20 +2,22 @@
 <html>
 <head>
    <link rel="stylesheet" href="static/leaderboard.css">
+   <link href='https://fonts.googleapis.com/css?family=Bubblegum Sans' rel='stylesheet'>
 </head>
 
 <body>
    <div>
-      <text>
+      <label class="label">
          Back to home page in <text class="curtime"></text> s
-      </text>
+      </label>
 
       <div class="game-over-container">
          <h1>Game Over</h1>
              <div class="score-circle">
-                 <p class="score">5</p>
+                 <text class="score">{{ score }}</text>
              </div>
-         <p class="comments"> Good job, you saved a lot! </p>
+         <p class="performance"> balls saved in 1 min!</p>
+         <p class="comments"> Great job, you saved a lot! </p>
          <img class="player-image" src="static/Boy_Kicking_Ball2.png"/>
      </div>
    </div>
