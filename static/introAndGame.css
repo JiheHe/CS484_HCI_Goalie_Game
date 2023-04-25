@@ -22,7 +22,7 @@ p {
   color: #F2F2F2;
 }
 
-@-webkit-keyframes "pulse" {
+@-webkit-keyframes pulse {
   0% {
   -webkit-transform: scale(1.1);
   transform: scale(1.1);
@@ -60,10 +60,12 @@ p {
 }
   
  .score-board{
-   margin-left: 35%;
+   /* margin-right: 35%;
    margin-bottom: 20px;
-   background-color: palegreen;
-   width: 30%;
+   width: 100%; */
+   top: 2.5%;
+   margin-left: 12%;
+   width: 100%;
  }
  
  .goalkeeper {

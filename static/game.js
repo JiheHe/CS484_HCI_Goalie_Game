@@ -66,7 +66,7 @@ $(function(){
     //   });
     // });
 
-    var timeLeft = 15;
+    var timeLeft = 59;
     var current_time = document.getElementById('timer');
     var current_level = document.getElementById('level');
 
@@ -87,7 +87,7 @@ $(function(){
         } else {
             if (timeLeft < 10) {
                 current_time.classList.add("timer2");
-                current_time.innerHTML = '00:0' + timeLeft;
+                current_time.innerHTML = '00:' + timeLeft;
                 timeLeft--;
             } else {
                  current_time.innerHTML = '00:' + timeLeft;
@@ -147,8 +147,8 @@ $(function(){
 
   function footballShot() {
     $('.football').css({
-        left:  getRandomXandY(100, 1000),
-        top: getRandomXandY(200, 400),
+        left:  getRandomXandY(100, 1010),
+        top: getRandomXandY(80, 320),
         transform: 'scale(1)'
     })
 

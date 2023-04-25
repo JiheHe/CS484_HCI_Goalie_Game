@@ -22,28 +22,15 @@
     color: red;
 }
 
-.level1 {
-    color: black;
-    left: 667px;
-}
-
-.level2 {
-    color: blue;
-    left: 645px;
-}
-
-.level3 {
-    color: red;
-    left: 670px;
-}
-
 #timer {     /* TUNE LATER */
     display: inline-block;
     position: absolute;
     width: 150px;
     padding: 5px;
-    top: 57px;
-    left: 305px;
+    /* top: 17px;
+    left: 121px; */
+    top: 2.5%;
+    left: 8%;
     text-align: center;
     font-size: 30px;
 }
@@ -56,27 +43,23 @@
 
 
 #level {
-    display: inline-block;
-    position: absolute;
-    width: 100px;
-    padding: 5px;
-    top: 44px;
+    /* display: inline-block; */
+    width: 100%;
+    height: 100%;
     text-align: center;
+    margin-left: 1%;
+    margin-top: 1%;
     font-family: "LevelDesign", monospace;
-    font-size: 60px;
+    font-size: 40px;
 }
 
 
 #score {
     display: inline-block;
     position: absolute;
-    width: 100px;
+    top: 16px;
+    right: 90px;
     padding: 5px;
-    top: 57px;
-    right: 325px;
     text-align: center;
     font-size: 30px;
 }
-
-
-  
