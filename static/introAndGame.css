@@ -85,13 +85,13 @@ p {
  .goalkeeperBody {
   position: absolute;
   width: 15%;
-  z-index: 60;
+  /* z-index: 60; */
 }
 
 .goalkeeperHead {
   position: absolute;
   width: 4.5%;
-  z-index: 60;
+  /* z-index: 60; */
 }
 
 .goalkeeperLeftHand {
@@ -99,7 +99,7 @@ p {
   width: 5%;
   transition: transform 0.1s;
   transform-origin: center center;
-  z-index: 60;
+  /* z-index: 60; */
 }
 
 .goalkeeperRightHand {
@@ -107,13 +107,13 @@ p {
   width: 5%;
   transition: transform 0.1s; /* tuning parameter: rate of data collection */
   transform-origin: center center;
-  z-index: 60;
+  /* z-index: 60; */
 }
 
 .goalkeeper {
   position: absolute;
   width: 20%;
-  z-index: 60;
+  /* z-index: 60; */
 }
  
  text {
