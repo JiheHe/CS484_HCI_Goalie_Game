@@ -10,6 +10,9 @@
    align-items: center;
    justify-content: center;
    height: 100%;
+   font-family: 'Bubblegum Sans';
+   color: #4CB748;
+   font-size: 40px;
  }
  
  .score-circle {
@@ -37,7 +40,22 @@
  .comments {
    color: #4CB748;
    font-size: 50px;
+   font-family: 'Bubblegum Sans';
  }
+
+
+ .label {
+  display: block;
+  background-color: #4CB748;
+  border-radius: 20px;
+  text-align: center;
+  font-size: 22px;
+  margin-left: 200px;
+  margin-right: 200px;
+
+ }
+
+ 
 
  
 
@@ -59,4 +77,4 @@ text{
    height: 80px;
    width: 30%;
    font-size: 14pt;
-} */
+} 

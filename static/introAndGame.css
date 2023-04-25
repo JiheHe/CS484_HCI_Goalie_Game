@@ -4,6 +4,7 @@
   margin-left: auto;
   margin-right: auto;
   width: 20%;
+  margin-top: 20px;
 }
 
 body {
@@ -168,6 +169,9 @@ p {
    width: 30%;
    font-size: 14pt;
    z-index: -10;
+   border-radius: 20px;
+   font-family: 'Bubblegum Sans'; font-size: 22px;
+   color: #4CB748;
 }
 
 .popup {
