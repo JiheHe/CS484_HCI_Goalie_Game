@@ -46,7 +46,7 @@ $(function(){
      let tutorialinterval = setInterval(function() {
         count--;
         document.querySelector('.tutorial-header').innerHTML = "Try to use your upper body to block the ball!";
-        document.querySelector('.tutorial-instruction').innerHTML = "If you wanna leave the game, just leave the screen :)";
+        document.querySelector('.tutorial-instruction').innerHTML = "Want to exit? Just move away from the screen :) " + "</br> Ensure the sensor isn't blocked! Don't leave now or the game will close. " + "</br> Sensor issues post-tutorial? Just retry :3";
         document.querySelector('.tutorial-timer').innerHTML = count + " s";
         if (count <= 0) {
             clearInterval(tutorialinterval);
@@ -57,6 +57,7 @@ $(function(){
   }
 
   function playGame(){
+    numFramesTillPause = 0;
     showTutorial();
     // window.addEventListener("mousemove", (e) =>{
     //   gsap.to(".goalkeeperBody", {
@@ -166,9 +167,12 @@ $(function(){
     ballcount += 1;
   }
 
+  let numFramesTillPause = 0; // for fault tolerance, just in case sensor lags for a frame
+  const numFramesPlayerInvalid = 10;
   function pauseGame(){
     // gameState = GameState.PAUSED; // for now!!!
     gameState = GameState.NOTINGAME;
+    numFramesTillPause = 0;
     let reminder = document.querySelector('.pause-reminder');
     reminder.style.display = "block";
 
@@ -448,7 +452,12 @@ $(function(){
         //   pauseGame();
         // }
         if (gameState === GameState.RUNNING) { // if the game is alraedy running and no one is in scene, then we pause the game
-          pauseGame(); // uncomment me please!
+          if (numFramesTillPause >= numFramesPlayerInvalid) {
+            pauseGame(); // uncomment me please!
+          }
+          else {
+            numFramesTillPause++;
+          }
         }
         confirmerID = -1; // no confirmer anyway
         document.getElementById("mockdata").style.opacity = 1;
@@ -478,6 +487,7 @@ $(function(){
           if (bodyID === inSessionPlayerID) {
             // console.log("Target found. at index " + bodyIndex + ". Updating data");
             // Player in session still exists! We want this one player's data ONLY.
+            numFramesTillPause = 0;
             return frames.ProcessUpperbodyData(frame, bodyIndex);
           }
         }
@@ -486,7 +496,12 @@ $(function(){
         // So we'll safely ignore that case. :). Potential issue: 1s data latency...
         // This means that if inSessionPlayerID is not found among the list of present IDs, then the player has left the view. So we pause the game.
         // gameState = GameState.PAUSED; // this line is included in pauseGame()
-        pauseGame(); // uncomment me please
+        if (numFramesTillPause >= numFramesPlayerInvalid) {
+          pauseGame(); // uncomment me please!
+        }
+        else {
+          numFramesTillPause++;
+        }
         return null;
       }
       else if (gameState === GameState.NOTINGAME){ // check for ANYONE that picks a choice; this is a per-user process
