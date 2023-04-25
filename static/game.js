@@ -41,12 +41,12 @@ $(function(){
     let reminder = document.querySelector('.tutorial-reminder');
     if (gameState === GameState.ONTUTORIAL) {reminder.style.display = "block"};
 
-     const readtime = 5;
+     const readtime = 7;
      let count = readtime;
      let tutorialinterval = setInterval(function() {
         count--;
         document.querySelector('.tutorial-header').innerHTML = "Try to use your upper body to block the ball!";
-        document.querySelector('.tutorial-instruction').innerHTML = "Want to exit? Just move away from the screen :) " + "</br> Ensure the sensor isn't blocked! Don't leave now or the game will close. " + "</br> Sensor issues post-tutorial? Just retry :3";
+        document.querySelector('.tutorial-instruction').innerHTML = "</br>Want to exit? Just move away from the screen :) " + "</br> Ensure the sensor isn't blocked! Don't leave now or the game will close. " + "</br> Sensor issues post-tutorial? Just retry :3";
         document.querySelector('.tutorial-timer').innerHTML = count + " s";
         if (count <= 0) {
             clearInterval(tutorialinterval);

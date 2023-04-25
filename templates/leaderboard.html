@@ -26,6 +26,13 @@
    <script src= "https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
    <script>
+      let score = {{ score }};
+      if (score > 5) {
+         $('.comments').text("Great job, you saved a lot!");
+      } else {
+         $('.comments').text("Nice try, good luck next time!");
+      }
+
       $(function(){
          let timer = 10;
          interval = setInterval(function(){

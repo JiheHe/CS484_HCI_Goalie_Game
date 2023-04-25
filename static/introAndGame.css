@@ -85,6 +85,7 @@ p {
  .goalkeeperBody {
   position: absolute;
   width: 15%;
+  padding-top: 20px;
   /* z-index: 60; */
 }
 
@@ -99,7 +100,7 @@ p {
   width: 5%;
   transition: transform 0.1s;
   transform-origin: center center;
-  /* z-index: 60; */
+  z-index: 10;
 }
 
 .goalkeeperRightHand {
