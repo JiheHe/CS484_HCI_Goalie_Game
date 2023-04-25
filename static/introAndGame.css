@@ -107,7 +107,7 @@ p {
   width: 5%;
   transition: transform 0.1s; /* tuning parameter: rate of data collection */
   transform-origin: center center;
-  /* z-index: 60; */
+  z-index: 10;
 }
 
 .goalkeeper {

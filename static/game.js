@@ -58,6 +58,7 @@ $(function(){
 
   function playGame(){
     numFramesTillPause = 0;
+    yOffsetFactor = 4;
     showTutorial();
     // window.addEventListener("mousemove", (e) =>{
     //   gsap.to(".goalkeeperBody", {
@@ -368,6 +369,7 @@ $(function(){
   let canvasWidth;
   let canvasHeight;
   let inSessionPlayerID = 12; // the id of the player in session, our targetID of focus. Just a test value. TODO.
+  let yOffsetFactor = 2.5;
 
   const confirmationWaitTime = 3;
   let timeAnchor = -1;
@@ -392,7 +394,7 @@ $(function(){
             // If a game session is running already, we know the data given will be that of a single goalie/player :D
             // So simply triggering position update functions for the current goalie
             var goaliePositionData = processedData;
-            updateGoaliePosition(".goalkeeperBody", goaliePositionData.goalieBodyCenterPosition, {x:0, y:0});   // won't be affected by device scaling
+            updateGoaliePosition(".goalkeeperBody", goaliePositionData.goalieBodyCenterPosition, {x:0, y:10});   // won't be affected by device scaling
             updateGoaliePosition(".goalkeeperHead", goaliePositionData.goalieHeadCenterPosition, {x:0, y:-5}); // can do this because will be relative to game space
             updateGoaliePosition(".goalkeeperLeftHand", goaliePositionData.goalieLeftHandCenterPosition, {x:0, y:0}, goaliePositionData.goalieLeftHandCenterRotation);
             updateGoaliePosition(".goalkeeperRightHand", goaliePositionData.goalieRightHandCenterPosition, {x:0, y:0}, goaliePositionData.goalieRightHandCenterRotation);
@@ -513,8 +515,8 @@ $(function(){
         // Find the user with the closest z axis (smallest number);
         for (let bodyIndex = 0; bodyIndex < bodyIDs.length; bodyIndex++) {
           let bodyData = frames.ProcessUpperbodyData(frame, bodyIndex);
-          if (bodyData.goalieRightHandCenterPosition != null) { // someone's showing their right hand ;D
-            let rightHandZDepth = bodyData.goalieRightHandCenterPosition.z;
+          if (bodyData.goalieLeftHandCenterPosition != null) { // someone's showing their right hand ;D
+            let rightHandZDepth = bodyData.goalieLeftHandCenterPosition.z; // user right hand
             if (rightHandZDepth < smallestZDepth) {
               smallestZDepth = rightHandZDepth;
               closestBodyData = [ bodyData, bodyIDs[bodyIndex] ]; // stores calculated upperbody data and user id
@@ -593,7 +595,6 @@ $(function(){
       return frame.people[playerId].joints[jointId].confidence;
     },
 
-
     MapKinectPositionToCanvas(kinectPosition) {
       const userX = kinectPosition.x * -1; // *-1 because the x axis is flipped for kinect
       const userY = kinectPosition.y;
@@ -606,7 +607,7 @@ $(function(){
       const normalizedY = (userY + halfHeight) / (2 * halfHeight);
 
       const canvasX = normalizedX * canvasWidth - canvasWidth / 2; // we can map x 1 to 1, so center it ;D
-      const canvasY = normalizedY * canvasHeight - canvasHeight / 3 // not diving by 2 because we can't map y 1 to 1 due to display height diff; need some offsets. TUNABLE
+      const canvasY = normalizedY * canvasHeight - canvasHeight / yOffsetFactor; // was 3 // not diving by 2 because we can't map y 1 to 1 due to display height diff; need some offsets. TUNABLE
     
       return { x: canvasX, y: canvasY, z: userZ }; // X and Y normalized, Z not normalized
     },
