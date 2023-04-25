@@ -44,13 +44,13 @@ Student Name and NetID: Annika Xu (xx238)
 Contribution: 
 
 
-Student Name and NetID: Jihe He jh2972
+Student Name and NetID: Jihe He (jh2972)
 Contribution: 
 
 
-Student Name and NetID: Naheem Watson nrw27
+Student Name and NetID: Naheem Watson (nrw27)
 Contribution: 
 
 
-Student Name and NetID: Ihtesham Khan - ik352
+Student Name and NetID: Ihtesham Khan (ik352)
 Contribution: 
