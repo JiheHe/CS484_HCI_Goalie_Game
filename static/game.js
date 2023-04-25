@@ -46,7 +46,7 @@ $(function(){
      let tutorialinterval = setInterval(function() {
         count--;
         document.querySelector('.tutorial-header').innerHTML = "Try to use your upper body to block the ball!";
-        document.querySelector('.tutorial-instruction').innerHTML = "</br>Want to exit? Just move away from the screen :) " + "</br> Ensure the sensor isn't blocked! Don't leave now or the game will close. " + "</br> Sensor issues post-tutorial? Just retry :3";
+        document.querySelector('.tutorial-instruction').innerHTML = "</br>Want to exit? Just move away from the screen :) " + "</br></br> Ensure the sensor isn't blocked! Don't leave now or the game will close. " + "</br> Sensor issues post-tutorial? Just retry :3";
         document.querySelector('.tutorial-timer').innerHTML = count + " s";
         if (count <= 0) {
             clearInterval(tutorialinterval);

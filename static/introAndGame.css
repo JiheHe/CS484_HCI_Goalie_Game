@@ -14,6 +14,10 @@ body {
   text-align: center;
 }
 
+.tutorial-header{
+  font-size: 35px;
+}
+
 h1 {
   font-size: 100px;
   color: #F2F2F2;

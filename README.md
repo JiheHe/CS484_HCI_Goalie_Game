@@ -121,3 +121,8 @@ project.
 
 Student Name and NetID: Ihtesham Khan (ik352)
 Contribution: 
+I met with my group several times at our display, coordinating everyone’s different roles for the project. 
+I created the intro page which required me to do research on colorblind-friendly options, animations, and 
+other HTML/CSS concepts that I needed refreshers on. Throughout the entire process, I was also communicating
+with Naheem for UI consistency. I created a basic template for the leaderboard but we didn't end up using that
+screen. I created the last/result screen with some help from Annika
