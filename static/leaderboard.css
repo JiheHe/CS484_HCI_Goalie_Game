@@ -13,7 +13,9 @@
 
  .label{
   font-family: 'Bubblegum Sans';
-  font-size: 23px;
+  padding-left: 10px;
+  padding-top: 10px;
+  font-size: 50px;
   color: #489c45;
   font-weight: bold;
  }
@@ -27,7 +29,7 @@
     background-color:#e5f9e3; */
     /* border: 30px solid #e5f9e3; */
     background-color:#4CB748; 
-    margin-left: 10%;
+    margin-left: 9.3%;
     width: 80%;
     height: 70%;
   }

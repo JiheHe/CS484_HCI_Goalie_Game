@@ -25,14 +25,14 @@
 #timer {     /* TUNE LATER */
     display: inline-block;
     position: absolute;
-    width: 150px;
+    width: 300px;
     padding: 5px;
     /* top: 17px;
     left: 121px; */
-    top: 2.5%;
-    left: 8%;
+    top: 3%;
+    left: 5.7%;
     text-align: center;
-    font-size: 30px;
+    font-size: 40px;
 }
 
 @font-face {
@@ -48,7 +48,7 @@
     height: 100%;
     text-align: center;
     margin-left: 1%;
-    margin-top: 1%;
+    margin-top: 1.5%;
     font-family: "LevelDesign", monospace;
     font-size: 40px;
 }
@@ -57,9 +57,14 @@
 #score {
     display: inline-block;
     position: absolute;
-    top: 16px;
-    right: 90px;
-    padding: 5px;
+    /* top: 17px;
+    left: 121px; */
+    top: 4.2%;
+    right: 7%;
     text-align: center;
-    font-size: 30px;
+    height: 200px;
+}
+
+.score, .outsidescore {
+    font-size: 25px;
 }

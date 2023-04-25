@@ -45,8 +45,8 @@ $(function(){
      let count = readtime;
      let tutorialinterval = setInterval(function() {
         count--;
-        document.querySelector('.tutorial-header').innerHTML = "Tutorial";
-        document.querySelector('.tutorial-instruction').innerHTML = "Try to use your upper body to block the ball! If you wanna leave the game, just leave the screen :)";
+        document.querySelector('.tutorial-header').innerHTML = "Try to use your upper body to block the ball!";
+        document.querySelector('.tutorial-instruction').innerHTML = "If you wanna leave the game, just leave the screen :)";
         document.querySelector('.tutorial-timer').innerHTML = count + " s";
         if (count <= 0) {
             clearInterval(tutorialinterval);
@@ -75,7 +75,11 @@ $(function(){
     interval1 = setInterval(function(){
       // console.log("reached interval 1 -- gameState: " + gameState);
       if (gameState === GameState.ONTUTORIAL) {
-        current_time.innerHTML = '00:' + timeLeft;
+        if (timeLeft < 10){
+          current_time.innerHTML = '00 : 0' + timeLeft;
+        }else{
+          current_time.innerHTML = '00 : ' + timeLeft;
+        }
       }
       if (gameState === GameState.RUNNING){
         /*$('.curtime').text(timer--);
@@ -89,10 +93,10 @@ $(function(){
         } else {
             if (timeLeft < 10) {
                 current_time.classList.add("timer2");
-                current_time.innerHTML = '00:' + timeLeft;
+                current_time.innerHTML = '00 : 0' + timeLeft;
                 timeLeft--;
             } else {
-                 current_time.innerHTML = '00:' + timeLeft;
+                 current_time.innerHTML = '00 : ' + timeLeft;
                    timeLeft--;
             }
         }
@@ -150,8 +154,8 @@ $(function(){
 
   function footballShot() {
     $('.football').css({
-        left:  getRandomXandY(100, 1010),
-        top: getRandomXandY(80, 320),
+        left:  getRandomXandY(200, 1400),
+        top: getRandomXandY(90, 450),
         transform: 'scale(1)'
     })
 
