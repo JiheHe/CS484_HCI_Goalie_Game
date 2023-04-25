@@ -51,24 +51,25 @@ in the area longer to account for such latency.
 (3) Spatial constraints: the display is at a corner, so the user gets more space the more back 
 he moves, but then the sensor data gets less accurate. There are also printer and table around the 
 mid range, which added challenge to the available space of user’s movement. To account for that, we 
-added a ratio to user’s x axis movement so the reading is amplified, in that when the user moves to the 
-edge of the sensor, the character moves to the edge of the game space. Regarding the y axis, we scaled 
-down the movement ratio so the user can stay relatively stable Y-axis wise as vertical movements won’t 
-matter much due to height difference too. We think the emphasis on horizontal movement provided safety 
-and flexibility in such a limited space.
+added a ratio to user’s x axis movement so the reading is amplified, in that when the user moves to 
+the edge of the sensor, the character moves to the edge of the game space. Regarding the y axis, we 
+scaled down the movement ratio so the user can stay relatively stable Y-axis wise as vertical movements 
+won’t matter much due to height difference too. We think the emphasis on horizontal movement provided 
+safety and flexibility in such a limited space.
 
 
 # - Collaboration Record -
-We divided the work evenly based on  each person's expertise and previous experience. Annika Xu contributed 
-a lot of work on the actual gameplay and flow of the project, as she coded the movement of the user's 
-body parts, the scoring functions, as well as the movement and speed of the soccer balls. Nick (Jihe) He 
-focused on data parsing, as well as helping Annika with gameflow and merging everyone's work together. 
-Naheem Watson and Ihtesham Khan tackled the html and overall game design. Naheem created the main game page 
-design, as well as the code the timer and level update, so that both change color as the game progresses. 
-Ihtesham created the eye-catching design for the intro and results html page. Ihtesham and Naheem worked 
-together to ensure that colors and themes were consisted over every screen. All 4 members met multiple 
-times to run tests, merge different work together, and get help when needed. Our consistent communication 
-over text-message is what led to a successful installation, and we are excited to move forward to user testing!
+We divided the work evenly based on  each person's expertise and previous experience. Annika Xu 
+contributed a lot of work on the actual gameplay and flow of the project, as she coded the movement 
+of the user's body parts, the scoring functions, as well as the movement and speed of the soccer balls. 
+Nick (Jihe) He focused on data parsing, as well as helping Annika with gameflow and merging everyone's 
+work together. Naheem Watson and Ihtesham Khan tackled the html and overall game design. Naheem created 
+the main game page design, as well as the code the timer and level update, so that both change color as 
+the game progresses. Ihtesham created the eye-catching design for the intro and results html page. Ihtesham 
+and Naheem worked together to ensure that colors and themes were consisted over every screen. All 4 members 
+met multiple times to run tests, merge different work together, and get help when needed. Our consistent 
+communication over text-message is what led to a successful installation, and we are excited to move forward 
+to user testing!
 
 
 Below is same information, but written individually.
@@ -84,9 +85,10 @@ Contribution:
 Student Name and NetID: Naheem Watson (nrw27)
 Contribution: 
 I created the main game page design, as well as the code the timer and level update, so that
-both change color as the game progresses. I help integrate the code for scoring, html design, timer and 
-level difficulty. Our game updates as the time gets closer to running out and signals when the game updates. 
-I also did a lot of work with positioning of html design and creating a Readme page for our project. 
+both change color as the game progresses. I help integrate the code for scoring, html design, timer 
+and level difficulty. Our game updates as the time gets closer to running out and signals when the game 
+updates. I also did a lot of work with positioning of html design and creating a Readme page for our 
+project. 
 
 
 Student Name and NetID: Ihtesham Khan (ik352)
